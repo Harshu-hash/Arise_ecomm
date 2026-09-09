@@ -1,0 +1,12 @@
+{
+  "backtraceGraph": {
+    "commands": [],
+    "files": [],
+    "nodes": []
+  },
+  "installers": [],
+  "paths": {
+    "build": "rnflashlist_autolinked_build",
+    "source": "D:/Arise/Ecommerce/node_modules/@shopify/flash-list/android/build/generated/source/codegen/jni"
+  }
+}

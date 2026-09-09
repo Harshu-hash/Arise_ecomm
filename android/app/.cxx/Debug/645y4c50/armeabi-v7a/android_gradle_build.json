@@ -1,0 +1,141 @@
+{
+  "buildFiles": [
+    "D:\\Arise\\Ecommerce\\node_modules\\@shopify\\flash-list\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
+    "D:\\Arise\\Ecommerce\\node_modules\\lottie-react-native\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
+    "D:\\Arise\\Ecommerce\\node_modules\\react-native-config\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
+    "D:\\Arise\\Ecommerce\\node_modules\\react-native-gesture-handler\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
+    "D:\\Arise\\Ecommerce\\node_modules\\react-native-mmkv\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
+    "D:\\Arise\\Ecommerce\\node_modules\\react-native-mmkv\\android\\CMakeLists.txt",
+    "D:\\Arise\\Ecommerce\\node_modules\\react-native-mmkv\\MMKV\\Core\\CMakeLists.txt",
+    "D:\\Arise\\Ecommerce\\node_modules\\react-native-reanimated\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
+    "D:\\Arise\\Ecommerce\\node_modules\\react-native-safe-area-context\\android\\src\\main\\jni\\CMakeLists.txt",
+    "D:\\Arise\\Ecommerce\\node_modules\\react-native-screens\\android\\src\\main\\jni\\CMakeLists.txt",
+    "D:\\Arise\\Ecommerce\\node_modules\\react-native-svg\\android\\src\\main\\jni\\CMakeLists.txt",
+    "D:\\Arise\\Ecommerce\\node_modules\\react-native-vector-icons\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
+    "D:\\Arise\\Ecommerce\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "D:\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "D:\\Arise\\Ecommerce\\android\\app\\.cxx\\Debug\\645y4c50\\armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "D:\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "D:\\Arise\\Ecommerce\\android\\app\\.cxx\\Debug\\645y4c50\\armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "appmodules::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "appmodules",
+      "output": "D:\\Arise\\Ecommerce\\android\\app\\build\\intermediates\\cxx\\Debug\\645y4c50\\obj\\armeabi-v7a\\libappmodules.so",
+      "runtimeFiles": [
+        "D:\\Arise\\Ecommerce\\android\\app\\build\\intermediates\\cxx\\Debug\\645y4c50\\obj\\armeabi-v7a\\libreact-native-mmkv.so",
+        "D:\\Arise\\Ecommerce\\android\\app\\build\\intermediates\\cxx\\Debug\\645y4c50\\obj\\armeabi-v7a\\libreact_codegen_safeareacontext.so",
+        "D:\\Arise\\Ecommerce\\android\\app\\build\\intermediates\\cxx\\Debug\\645y4c50\\obj\\armeabi-v7a\\libreact_codegen_rnscreens.so",
+        "D:\\Arise\\Ecommerce\\android\\app\\build\\intermediates\\cxx\\Debug\\645y4c50\\obj\\armeabi-v7a\\libreact_codegen_rnsvg.so",
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\eb4b98dea289284ca2b26e9265bd49ab\\transformed\\fbjni-0.6.0\\prefab\\modules\\fbjni\\libs\\android.armeabi-v7a\\libfbjni.so",
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\2fa3c78e855de2c4ef8aa6911c4216a0\\transformed\\react-android-0.76.0-debug\\prefab\\modules\\jsi\\libs\\android.armeabi-v7a\\libjsi.so",
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\2fa3c78e855de2c4ef8aa6911c4216a0\\transformed\\react-android-0.76.0-debug\\prefab\\modules\\reactnative\\libs\\android.armeabi-v7a\\libreactnative.so"
+      ]
+    },
+    "core::@1b9a7d546b295b7d0867": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "core",
+      "output": "D:\\Arise\\Ecommerce\\android\\app\\.cxx\\Debug\\645y4c50\\armeabi-v7a\\RNMmkvSpec_cxxmodule_autolinked_build\\core\\libcore.a"
+    },
+    "react-native-mmkv::@4ae6a1e65d3e68ba0197": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "react-native-mmkv",
+      "output": "D:\\Arise\\Ecommerce\\android\\app\\build\\intermediates\\cxx\\Debug\\645y4c50\\obj\\armeabi-v7a\\libreact-native-mmkv.so",
+      "runtimeFiles": [
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\eb4b98dea289284ca2b26e9265bd49ab\\transformed\\fbjni-0.6.0\\prefab\\modules\\fbjni\\libs\\android.armeabi-v7a\\libfbjni.so",
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\2fa3c78e855de2c4ef8aa6911c4216a0\\transformed\\react-android-0.76.0-debug\\prefab\\modules\\jsi\\libs\\android.armeabi-v7a\\libjsi.so",
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\2fa3c78e855de2c4ef8aa6911c4216a0\\transformed\\react-android-0.76.0-debug\\prefab\\modules\\reactnative\\libs\\android.armeabi-v7a\\libreactnative.so"
+      ]
+    },
+    "react_codegen_RNCConfigSpec::@89f1b79ed4954e2f2cff": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "react_codegen_RNCConfigSpec"
+    },
+    "react_codegen_RNMmkvSpec::@7541eabbae598da31a69": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "react_codegen_RNMmkvSpec"
+    },
+    "react_codegen_RNVectorIconsSpec::@479809fae146501fd34d": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "react_codegen_RNVectorIconsSpec"
+    },
+    "react_codegen_lottiereactnative::@0fa4dc904d7e359a99fb": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "react_codegen_lottiereactnative"
+    },
+    "react_codegen_rnflashlist::@c1d6cf6af84cbabf418f": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "react_codegen_rnflashlist"
+    },
+    "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "react_codegen_rngesturehandler_codegen"
+    },
+    "react_codegen_rnreanimated::@8afabad14bfffa3f8b9a": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "react_codegen_rnreanimated"
+    },
+    "react_codegen_rnscreens::@25bcbd507e98d3a854ad": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "react_codegen_rnscreens",
+      "output": "D:\\Arise\\Ecommerce\\android\\app\\build\\intermediates\\cxx\\Debug\\645y4c50\\obj\\armeabi-v7a\\libreact_codegen_rnscreens.so",
+      "runtimeFiles": [
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\2fa3c78e855de2c4ef8aa6911c4216a0\\transformed\\react-android-0.76.0-debug\\prefab\\modules\\reactnative\\libs\\android.armeabi-v7a\\libreactnative.so",
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\2fa3c78e855de2c4ef8aa6911c4216a0\\transformed\\react-android-0.76.0-debug\\prefab\\modules\\jsi\\libs\\android.armeabi-v7a\\libjsi.so",
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\eb4b98dea289284ca2b26e9265bd49ab\\transformed\\fbjni-0.6.0\\prefab\\modules\\fbjni\\libs\\android.armeabi-v7a\\libfbjni.so"
+      ]
+    },
+    "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "react_codegen_rnsvg",
+      "output": "D:\\Arise\\Ecommerce\\android\\app\\build\\intermediates\\cxx\\Debug\\645y4c50\\obj\\armeabi-v7a\\libreact_codegen_rnsvg.so",
+      "runtimeFiles": [
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\2fa3c78e855de2c4ef8aa6911c4216a0\\transformed\\react-android-0.76.0-debug\\prefab\\modules\\reactnative\\libs\\android.armeabi-v7a\\libreactnative.so",
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\2fa3c78e855de2c4ef8aa6911c4216a0\\transformed\\react-android-0.76.0-debug\\prefab\\modules\\jsi\\libs\\android.armeabi-v7a\\libjsi.so",
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\eb4b98dea289284ca2b26e9265bd49ab\\transformed\\fbjni-0.6.0\\prefab\\modules\\fbjni\\libs\\android.armeabi-v7a\\libfbjni.so"
+      ]
+    },
+    "react_codegen_safeareacontext::@7984cd80db47aa7b952a": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "react_codegen_safeareacontext",
+      "output": "D:\\Arise\\Ecommerce\\android\\app\\build\\intermediates\\cxx\\Debug\\645y4c50\\obj\\armeabi-v7a\\libreact_codegen_safeareacontext.so",
+      "runtimeFiles": [
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\eb4b98dea289284ca2b26e9265bd49ab\\transformed\\fbjni-0.6.0\\prefab\\modules\\fbjni\\libs\\android.armeabi-v7a\\libfbjni.so",
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\2fa3c78e855de2c4ef8aa6911c4216a0\\transformed\\react-android-0.76.0-debug\\prefab\\modules\\jsi\\libs\\android.armeabi-v7a\\libjsi.so",
+        "C:\\Users\\harsh\\.gradle\\caches\\8.10.2\\transforms\\2fa3c78e855de2c4ef8aa6911c4216a0\\transformed\\react-android-0.76.0-debug\\prefab\\modules\\reactnative\\libs\\android.armeabi-v7a\\libreactnative.so"
+      ]
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "D:\\Android\\Sdk\\ndk\\26.1.10909125\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe",
+      "cppCompilerExecutable": "D:\\Android\\Sdk\\ndk\\26.1.10909125\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": ["cpp"]
+}
