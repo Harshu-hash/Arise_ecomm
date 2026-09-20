@@ -10,7 +10,9 @@ const AccountListRow = ({ icon, label, subtitle, onPress, showChevron = true, st
     activeOpacity={0.7}
     onPress={onPress}
     style={[styles.row, subtitle && styles.rowWithSubtitle, style]}>
-    <Icon name={icon} size={19} color={COLORS.primary} style={styles.icon} />
+    <View style={styles.iconCircle}>
+      <Icon name={icon} size={17} color={COLORS.primary} />
+    </View>
     <View style={styles.textBox}>
       <Text style={styles.label}>{label}</Text>
       {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
@@ -32,9 +34,14 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: SPACING.m + 2,
   },
-  icon: {
-    width: 28,
-    marginTop: 1,
+  iconCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: COLORS.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.s,
   },
   chevron: {
     alignSelf: 'center',

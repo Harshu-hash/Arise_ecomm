@@ -1,0 +1,419 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						9,
+						10,
+						11,
+						12,
+						13
+					],
+					"jsonFile" : "directory-.-RelWithDebInfo-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "rnblurview_autolinked_build",
+					"jsonFile" : "directory-rnblurview_autolinked_build-RelWithDebInfo-25cc9b435e4eadd12a66.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "D:/Arise/Ecommerce/node_modules/@react-native-community/blur/android/build/generated/source/codegen/jni",
+					"targetIndexes" : 
+					[
+						7
+					]
+				},
+				{
+					"build" : "rnflashlist_autolinked_build",
+					"jsonFile" : "directory-rnflashlist_autolinked_build-RelWithDebInfo-70fe8585d13d6689fbbf.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "D:/Arise/Ecommerce/node_modules/@shopify/flash-list/android/build/generated/source/codegen/jni",
+					"targetIndexes" : 
+					[
+						8
+					]
+				},
+				{
+					"build" : "lottiereactnative_autolinked_build",
+					"jsonFile" : "directory-lottiereactnative_autolinked_build-RelWithDebInfo-29df106b980a1f5a4e26.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "D:/Arise/Ecommerce/node_modules/lottie-react-native/android/build/generated/source/codegen/jni",
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"build" : "RNCConfigSpec_autolinked_build",
+					"jsonFile" : "directory-RNCConfigSpec_autolinked_build-RelWithDebInfo-56f0f6955c6ff8dd0cfc.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "D:/Arise/Ecommerce/node_modules/react-native-config/android/build/generated/source/codegen/jni",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "rngesturehandler_codegen_autolinked_build",
+					"jsonFile" : "directory-rngesturehandler_codegen_autolinked_build-RelWithDebInfo-dae66b46ea8ca35e9d4b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "D:/Arise/Ecommerce/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni",
+					"targetIndexes" : 
+					[
+						9
+					]
+				},
+				{
+					"build" : "RNMmkvSpec_autolinked_build",
+					"jsonFile" : "directory-RNMmkvSpec_autolinked_build-RelWithDebInfo-3d07e329484a86362479.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "D:/Arise/Ecommerce/node_modules/react-native-mmkv/android/build/generated/source/codegen/jni",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"build" : "RNMmkvSpec_cxxmodule_autolinked_build",
+					"childIndexes" : 
+					[
+						8
+					],
+					"jsonFile" : "directory-RNMmkvSpec_cxxmodule_autolinked_build-RelWithDebInfo-0a56138506889724826d.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.9.0"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "D:/Arise/Ecommerce/node_modules/react-native-mmkv/android",
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"build" : "RNMmkvSpec_cxxmodule_autolinked_build/core",
+					"jsonFile" : "directory-RNMmkvSpec_cxxmodule_autolinked_build.core-RelWithDebInfo-bf4aa4f65945d9d0f59d.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.0"
+					},
+					"parentIndex" : 7,
+					"projectIndex" : 2,
+					"source" : "D:/Arise/Ecommerce/node_modules/react-native-mmkv/MMKV/Core",
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"build" : "rnreanimated_autolinked_build",
+					"jsonFile" : "directory-rnreanimated_autolinked_build-RelWithDebInfo-815a8fdbf81eb95e7a21.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "D:/Arise/Ecommerce/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni",
+					"targetIndexes" : 
+					[
+						10
+					]
+				},
+				{
+					"build" : "safeareacontext_autolinked_build",
+					"jsonFile" : "directory-safeareacontext_autolinked_build-RelWithDebInfo-d96ef735b32ddabc67d2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "D:/Arise/Ecommerce/node_modules/react-native-safe-area-context/android/src/main/jni",
+					"targetIndexes" : 
+					[
+						13
+					]
+				},
+				{
+					"build" : "rnscreens_autolinked_build",
+					"jsonFile" : "directory-rnscreens_autolinked_build-RelWithDebInfo-8efbd8b232dac64987c3.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "D:/Arise/Ecommerce/node_modules/react-native-screens/android/src/main/jni",
+					"targetIndexes" : 
+					[
+						11
+					]
+				},
+				{
+					"build" : "rnsvg_autolinked_build",
+					"jsonFile" : "directory-rnsvg_autolinked_build-RelWithDebInfo-ab050b2e96d6858e062f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "D:/Arise/Ecommerce/node_modules/react-native-svg/android/src/main/jni",
+					"targetIndexes" : 
+					[
+						12
+					]
+				},
+				{
+					"build" : "RNVectorIconsSpec_autolinked_build",
+					"jsonFile" : "directory-RNVectorIconsSpec_autolinked_build-RelWithDebInfo-b6f4ed031665630fd99f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "D:/Arise/Ecommerce/node_modules/react-native-vector-icons/android/build/generated/source/codegen/jni",
+					"targetIndexes" : 
+					[
+						5
+					]
+				}
+			],
+			"name" : "RelWithDebInfo",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						9,
+						10,
+						11,
+						12,
+						13
+					],
+					"name" : "appmodules",
+					"targetIndexes" : 
+					[
+						0,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2
+					],
+					"directoryIndexes" : 
+					[
+						7
+					],
+					"name" : "ReactNativeMmkv",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						8
+					],
+					"name" : "core",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "appmodules::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appmodules-RelWithDebInfo-e024da1e3b5147379e1e.json",
+					"name" : "appmodules",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "core::@1b9a7d546b295b7d0867",
+					"jsonFile" : "target-core-RelWithDebInfo-287f59796418cc814596.json",
+					"name" : "core",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "react-native-mmkv::@4ae6a1e65d3e68ba0197",
+					"jsonFile" : "target-react-native-mmkv-RelWithDebInfo-bdc16d213d3e15c33af3.json",
+					"name" : "react-native-mmkv",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "react_codegen_RNCConfigSpec::@89f1b79ed4954e2f2cff",
+					"jsonFile" : "target-react_codegen_RNCConfigSpec-RelWithDebInfo-15733116782c7106b4fb.json",
+					"name" : "react_codegen_RNCConfigSpec",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "react_codegen_RNMmkvSpec::@7541eabbae598da31a69",
+					"jsonFile" : "target-react_codegen_RNMmkvSpec-RelWithDebInfo-5af08ed0d5b18f10c9db.json",
+					"name" : "react_codegen_RNMmkvSpec",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "react_codegen_RNVectorIconsSpec::@479809fae146501fd34d",
+					"jsonFile" : "target-react_codegen_RNVectorIconsSpec-RelWithDebInfo-7b42178f0cf70c9665af.json",
+					"name" : "react_codegen_RNVectorIconsSpec",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "react_codegen_lottiereactnative::@0fa4dc904d7e359a99fb",
+					"jsonFile" : "target-react_codegen_lottiereactnative-RelWithDebInfo-97d3b1dcf95cdb5b9963.json",
+					"name" : "react_codegen_lottiereactnative",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "react_codegen_rnblurview::@9a34ffec6e39b5c9049e",
+					"jsonFile" : "target-react_codegen_rnblurview-RelWithDebInfo-524591180c5658f69438.json",
+					"name" : "react_codegen_rnblurview",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "react_codegen_rnflashlist::@c1d6cf6af84cbabf418f",
+					"jsonFile" : "target-react_codegen_rnflashlist-RelWithDebInfo-8b90e89bc15f9c1aa25b.json",
+					"name" : "react_codegen_rnflashlist",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec",
+					"jsonFile" : "target-react_codegen_rngesturehandler_codegen-RelWithDebInfo-5a32c04b38b08dec2f55.json",
+					"name" : "react_codegen_rngesturehandler_codegen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "react_codegen_rnreanimated::@8afabad14bfffa3f8b9a",
+					"jsonFile" : "target-react_codegen_rnreanimated-RelWithDebInfo-448360f8402eccf75449.json",
+					"name" : "react_codegen_rnreanimated",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 11,
+					"id" : "react_codegen_rnscreens::@25bcbd507e98d3a854ad",
+					"jsonFile" : "target-react_codegen_rnscreens-RelWithDebInfo-02b6012deac077f65120.json",
+					"name" : "react_codegen_rnscreens",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65",
+					"jsonFile" : "target-react_codegen_rnsvg-RelWithDebInfo-1f0a034353336b51185f.json",
+					"name" : "react_codegen_rnsvg",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "react_codegen_safeareacontext::@7984cd80db47aa7b952a",
+					"jsonFile" : "target-react_codegen_safeareacontext-RelWithDebInfo-702f5fcfaec237adedb7.json",
+					"name" : "react_codegen_safeareacontext",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/Arise/Ecommerce/android/app/.cxx/RelWithDebInfo/26h3e6q5/armeabi-v7a",
+		"source" : "D:/Arise/Ecommerce/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

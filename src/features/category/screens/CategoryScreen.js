@@ -75,7 +75,7 @@ const CategoryScreen = ({ route, navigation }) => {
                   <CategorySpotlightTile
                     key={item.id}
                     item={item}
-                    onPress={() => navigation && navigation.navigate('Search')}
+                    onPress={() => navigation && navigation.navigate('SearchResults', { query: item.label })}
                   />
                 ))}
                 {section.viewAll ? (

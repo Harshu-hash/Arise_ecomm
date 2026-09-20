@@ -1,5 +1,6 @@
 {
   "buildFiles": [
+    "D:\\Arise\\Ecommerce\\node_modules\\@react-native-community\\blur\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
     "D:\\Arise\\Ecommerce\\node_modules\\@shopify\\flash-list\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
     "D:\\Arise\\Ecommerce\\node_modules\\lottie-react-native\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
     "D:\\Arise\\Ecommerce\\node_modules\\react-native-config\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
@@ -81,6 +82,11 @@
       "abi": "x86_64",
       "artifactName": "react_codegen_lottiereactnative"
     },
+    "react_codegen_rnblurview::@9a34ffec6e39b5c9049e": {
+      "toolchain": "toolchain",
+      "abi": "x86_64",
+      "artifactName": "react_codegen_rnblurview"
+    },
     "react_codegen_rnflashlist::@c1d6cf6af84cbabf418f": {
       "toolchain": "toolchain",
       "abi": "x86_64",
@@ -137,5 +143,7 @@
     }
   },
   "cFileExtensions": [],
-  "cppFileExtensions": ["cpp"]
+  "cppFileExtensions": [
+    "cpp"
+  ]
 }

@@ -5,17 +5,21 @@ import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/spacing';
 
 const EXPANDED_HEIGHT = 66;
-const COLLAPSED_HEIGHT = 36;
 
 /**
  * "For You | Fashion | Mobiles | Electronics | Beauty ..." underline tab strip on Home.
  * A single shared underline slides + resizes to the clicked tab (measured tab positions,
  * animated with Animated.timing) instead of each tab toggling its own static bar.
- * When `scrollY` is provided, the icons shrink + fade away in sync with the header's own
- * collapse (transform/opacity only, native thread, no jank). When `heightScrollY` is also
- * provided, the row's own reserved height shrinks too — via a fixed-size inner row bottom-
- * aligned inside a shrinking, clipped outer window, so the icon area gets cropped away
- * instead of just sitting there empty once the icons have faded out.
+ * When `scrollY` is provided, the icons shrink + fade away and the labels rise, in sync
+ * with the header's own collapse — all transform/opacity only, driven by the SAME native
+ * scrollY value as the header's translate, so they can never drift out of sync with it.
+ *
+ * NOTE: an earlier version also shrank the row's own height via a second, JS-driven
+ * value (since `height` isn't native-driver compatible). That couldn't share a driver
+ * with the native header translate, so under fast/scrolled states the two visibly
+ * desynced — leaving gaps between the header and the content below it. Do not
+ * reintroduce a height animation here; keep this row's own box height static and let
+ * only transform/opacity move within it.
  */
 const CategoryTabStrip = ({
   tabs,
@@ -24,7 +28,6 @@ const CategoryTabStrip = ({
   style,
   scrollY,
   collapseDistance = 100,
-  heightScrollY,
 }) => {
   const isIconAnimated = !!scrollY;
   const iconScale = isIconAnimated
@@ -50,15 +53,6 @@ const CategoryTabStrip = ({
         extrapolate: 'clamp',
       })
     : 0;
-
-  const isHeightAnimated = !!heightScrollY;
-  const rowHeight = isHeightAnimated
-    ? heightScrollY.interpolate({
-        inputRange: [0, collapseDistance],
-        outputRange: [EXPANDED_HEIGHT, COLLAPSED_HEIGHT],
-        extrapolate: 'clamp',
-      })
-    : EXPANDED_HEIGHT;
 
   // --- Sliding underline: measured tab positions -> a single animated indicator ---
   const tabLayoutsRef = useRef({});
@@ -109,49 +103,53 @@ const CategoryTabStrip = ({
   }, [activeId]);
 
   return (
-    <Animated.View
-      style={[
-        style,
-        styles.clipWindow,
-        isHeightAnimated ? { height: rowHeight } : { height: EXPANDED_HEIGHT },
-      ]}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.scrollView}
-        contentContainerStyle={styles.row}>
-        {tabs.map((tab) => {
-          const isActive = tab.id === activeId;
-          return (
-            <TouchableOpacity
-              key={tab.id}
-              activeOpacity={0.8}
-              onPress={() => onSelect && onSelect(tab)}
-              onLayout={(e) => handleTabLayout(tab.id, e)}
-              style={styles.tab}>
-              <Animated.View
-                style={[
-                  styles.iconBox,
-                  isActive && styles.iconBoxActive,
-                  isIconAnimated && { opacity: iconOpacity, transform: [{ scale: iconScale }] },
-                ]}>
-                {tab.icon && (
-                  <Ionicons
-                    name={tab.icon}
-                    size={22}
-                    color={COLORS.textPrimary}
-                  />
-                )}
-              </Animated.View>
-              <Animated.View style={isIconAnimated && { transform: [{ translateY: labelTranslateY }] }}>
-                <Text style={[styles.label, isActive && styles.labelActive]}>{tab.label}</Text>
-              </Animated.View>
-            </TouchableOpacity>
-          );
-        })}
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={[styles.scrollView, style]}
+      contentContainerStyle={styles.row}>
+      {tabs.map((tab) => {
+        const isActive = tab.id === activeId;
+        return (
+          <TouchableOpacity
+            key={tab.id}
+            activeOpacity={0.8}
+            onPress={() => onSelect && onSelect(tab)}
+            onLayout={(e) => handleTabLayout(tab.id, e)}
+            style={styles.tab}>
+            <Animated.View
+              style={[
+                styles.iconBox,
+                isActive && styles.iconBoxActive,
+                isIconAnimated && { opacity: iconOpacity, transform: [{ scale: iconScale }] },
+              ]}>
+              {tab.icon && (
+                <Ionicons
+                  name={tab.icon}
+                  size={22}
+                  color={COLORS.textPrimary}
+                />
+              )}
+            </Animated.View>
+            <Animated.View style={isIconAnimated && { transform: [{ translateY: labelTranslateY }] }}>
+              <Text style={[styles.label, isActive && styles.labelActive]}>{tab.label}</Text>
+            </Animated.View>
+          </TouchableOpacity>
+        );
+      })}
 
+      {/*
+        Two nested Animated.Views on purpose: labelTranslateY is derived from the
+        native-driven scrollY, while underlineX/underlineWidth are driven with
+        useNativeDriver:false (Animated.timing on tab click, a plain layout-adjacent
+        value). Mixing both driver types in a single style/transform array throws
+        ("Attempting to run JS driven animation on animated node that has been moved
+        to 'native'"), so each driver gets its own wrapper.
+      */}
+      <Animated.View
+        pointerEvents="none"
+        style={[styles.slidingUnderlineAnchor, { transform: [{ translateY: labelTranslateY }] }]}>
         <Animated.View
-          pointerEvents="none"
           style={[
             styles.slidingUnderline,
             {
@@ -161,29 +159,24 @@ const CategoryTabStrip = ({
             },
           ]}
         />
-      </ScrollView>
-    </Animated.View>
+      </Animated.View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  clipWindow: {
-    width: '100%',
-    overflow: 'hidden',
-    justifyContent: 'flex-end',
-  },
   scrollView: {
     height: EXPANDED_HEIGHT,
     flexGrow: 0,
   },
   row: {
     paddingHorizontal: SPACING.l,
-    alignItems: 'center',
+    paddingBottom: 14,
+    alignItems: 'flex-end',
   },
   tab: {
     alignItems: 'center',
     marginRight: SPACING.l,
-    paddingBottom: SPACING.xs,
   },
   iconBox: {
     width: 46,
@@ -202,10 +195,12 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     fontWeight: '700',
   },
-  slidingUnderline: {
+  slidingUnderlineAnchor: {
     position: 'absolute',
     left: 0,
-    bottom: 4,
+    bottom: 7,
+  },
+  slidingUnderline: {
     height: 3,
     backgroundColor: COLORS.primary,
     borderTopLeftRadius: 2,

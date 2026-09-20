@@ -155,7 +155,22 @@ const ProductDetailScreen = ({ route, navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.9}
-          onPress={() => navigation && navigation.navigate('Tracking')}
+          onPress={() =>
+            navigation &&
+            navigation.navigate('Checkout', {
+              items: [
+                {
+                  id: product.id || 'buy-now-item',
+                  name: product.name,
+                  variant: product.variant,
+                  qty: Math.max(quantity, 1),
+                  price: product.price,
+                  mrp: product.mrp,
+                  image: product.image,
+                },
+              ],
+            })
+          }
           style={styles.buyNowBtn}>
           <Text style={styles.buyNowText}>Buy now</Text>
         </TouchableOpacity>

@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS } from '../../../constants/colors';
 import { SPACING, RADIUS } from '../../../constants/spacing';
-import { StatusBarManager, TopBrandTabs, GradientBackground } from '../../../shared/components';
+import { StatusBarManager, TopBrandTabs } from '../../../shared/components';
 import { BRAND_TABS } from '../../home/data/homeData';
 import OfferThemeSection from '../components/OfferThemeSection';
 
@@ -32,24 +32,65 @@ const GROCERY_DEALS = [
   { id: 'gd3', image: 'https://images.unsplash.com/photo-1517686469429-8bdb88b9f907?auto=format&fit=crop&w=300&q=80', bannerText: 'Under ₹299', label: 'Breakfast needs' },
 ];
 
+const STROKE_OFFSETS = [
+  { x: -2, y: -2 }, { x: 0, y: -2 }, { x: 2, y: -2 },
+  { x: -2, y: 0 }, { x: 2, y: 0 },
+  { x: -2, y: 2 }, { x: 0, y: 2 }, { x: 2, y: 2 },
+];
+
 const OffersScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
+
+  const handleBrandSelect = (tab) => {
+    if (tab.id === 'flipkart') {
+      if (navigation && navigation.canGoBack()) {
+        navigation.goBack();
+      } else {
+        navigation && navigation.navigate('MainTabs', { screen: 'Home' });
+      }
+    }
+  };
+
+  const handleSearchPress = () => navigation && navigation.navigate('Search');
 
   return (
     <View style={styles.container}>
       <StatusBarManager barStyle="light-content" themeColor={COLORS.offerRed} />
 
       <View style={styles.headerZone}>
-        <GradientBackground colors={[COLORS.offerRed, COLORS.campaignGradientStart]} />
         <View style={{ paddingTop: Math.max(insets.top, 12) }}>
-          <TopBrandTabs tabs={BRAND_TABS} activeId="value365" />
+          <TopBrandTabs tabs={BRAND_TABS} activeId="value365" onSelect={handleBrandSelect} />
+
+          <TouchableOpacity activeOpacity={0.9} onPress={handleSearchPress} style={styles.searchBar}>
+            <Icon name="search" size={20} color={COLORS.textPrimary} style={{ marginRight: SPACING.s }} />
+            <Text style={styles.searchPlaceholder}>watches</Text>
+            <Icon name="camera" size={19} color={COLORS.textSecondary} style={{ marginRight: SPACING.m }} />
+            <Icon name="mic" size={19} color={COLORS.textSecondary} />
+          </TouchableOpacity>
         </View>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        <View style={styles.heroCard}>
-          <Text style={styles.heroWordmark}>VALUE 365</Text>
-          <Text style={styles.heroSubtitle}>LOWEST PRICES EVERY DAY.</Text>
+        <View style={styles.heroSection}>
+          <Text style={[styles.decoEmoji, styles.decoPeace]}>✌🏻</Text>
+          <Text style={[styles.decoEmoji, styles.decoBolt]}>⚡</Text>
+          <Text style={[styles.decoEmoji, styles.decoTicket]}>🎟️</Text>
+
+          <View style={styles.wordmarkStack}>
+            {STROKE_OFFSETS.map(({ x, y }, i) => (
+              <Text
+                key={i}
+                style={[styles.heroWordmark, styles.heroWordmarkStroke, { transform: [{ translateX: x }, { translateY: y }] }]}>
+                VALUE 365
+              </Text>
+            ))}
+            <Text style={styles.heroWordmark}>VALUE 365</Text>
+          </View>
+
+          <View style={styles.subtitleBox}>
+            <Text style={styles.heroSubtitle}>LOWEST PRICES</Text>
+            <Text style={styles.heroSubtitle}>EVERY DAY.</Text>
+          </View>
         </View>
 
         <OfferThemeSection title="Rakhi Essentials" items={RAKHI_ESSENTIALS} variant="gradient" />
@@ -74,30 +115,94 @@ const styles = StyleSheet.create({
   headerZone: {
     position: 'relative',
     paddingBottom: SPACING.m,
+    backgroundColor: COLORS.offerRed,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    borderRadius: 24,
+    paddingHorizontal: SPACING.l,
+    height: 44,
+    marginHorizontal: SPACING.l,
+    marginTop: SPACING.m,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  searchPlaceholder: {
+    flex: 1,
+    fontSize: 17,
+    fontWeight: '400',
+    color: COLORS.textPrimary,
   },
   scrollContent: {
     paddingBottom: 32,
   },
-  heroCard: {
-    backgroundColor: '#7A0C1E',
-    marginHorizontal: SPACING.l,
-    marginTop: SPACING.l,
-    borderRadius: RADIUS.l,
-    paddingVertical: SPACING.xxl,
+  heroSection: {
+    backgroundColor: COLORS.offerRed,
+    paddingTop: SPACING.xl,
+    paddingBottom: SPACING.xxl,
     alignItems: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+  },
+  decoEmoji: {
+    position: 'absolute',
+    fontSize: 26,
+  },
+  decoPeace: {
+    top: 4,
+    left: 24,
+    transform: [{ rotate: '-18deg' }],
+  },
+  decoBolt: {
+    top: 60,
+    right: 20,
+    fontSize: 30,
+    transform: [{ rotate: '8deg' }],
+  },
+  decoTicket: {
+    bottom: 6,
+    left: 20,
+    fontSize: 24,
+    transform: [{ rotate: '-16deg' }],
+  },
+  wordmarkStack: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   heroWordmark: {
-    color: COLORS.ctaYellow,
-    fontSize: 30,
+    color: COLORS.white,
+    fontSize: 28,
     fontWeight: '900',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
+  },
+  heroWordmarkStroke: {
+    position: 'absolute',
+    color: '#7A0C1E',
+  },
+  subtitleBox: {
+    backgroundColor: '#7A0C1E',
+    borderRadius: RADIUS.l,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.18)',
+    marginTop: SPACING.l,
+    marginHorizontal: SPACING.l,
+    paddingVertical: SPACING.l,
+    paddingHorizontal: SPACING.xxl,
+    alignItems: 'center',
   },
   heroSubtitle: {
-    color: COLORS.white,
-    fontSize: 14,
-    fontWeight: '700',
-    marginTop: SPACING.s,
+    color: COLORS.ctaYellow,
+    fontSize: 16,
+    fontWeight: '900',
     letterSpacing: 0.5,
+    textAlign: 'center',
   },
 });
 

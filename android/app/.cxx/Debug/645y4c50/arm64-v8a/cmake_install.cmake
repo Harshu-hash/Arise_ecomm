@@ -44,6 +44,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
+  include("D:/Arise/Ecommerce/android/app/.cxx/Debug/645y4c50/arm64-v8a/rnblurview_autolinked_build/cmake_install.cmake")
   include("D:/Arise/Ecommerce/android/app/.cxx/Debug/645y4c50/arm64-v8a/rnflashlist_autolinked_build/cmake_install.cmake")
   include("D:/Arise/Ecommerce/android/app/.cxx/Debug/645y4c50/arm64-v8a/lottiereactnative_autolinked_build/cmake_install.cmake")
   include("D:/Arise/Ecommerce/android/app/.cxx/Debug/645y4c50/arm64-v8a/RNCConfigSpec_autolinked_build/cmake_install.cmake")

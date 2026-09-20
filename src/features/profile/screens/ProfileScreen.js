@@ -5,18 +5,13 @@ import Icon from 'react-native-vector-icons/Feather';
 import { COLORS } from '../../../constants/colors';
 import { SPACING, RADIUS } from '../../../constants/spacing';
 import { StatusBarManager, AccountListRow } from '../../../shared/components';
+import { ACCOUNT_SECTIONS } from '../constants/accountSections';
 
 const QUICK_ACTIONS = [
-  { id: 'orders', label: 'Orders', icon: 'package' },
-  { id: 'wishlist', label: 'Wishlist', icon: 'heart' },
-  { id: 'coupons', label: 'Coupons', icon: 'gift' },
-  { id: 'help', label: 'Help Center', icon: 'headphones' },
-];
-
-const FINANCE_OPTIONS = [
-  { id: 'f1', icon: 'smartphone', title: 'Pre-Approved Supermoney Credit Card', subtitle: '1% cashback on UPI & Non-UPI | 100% Approval | Lifetime Free' },
-  { id: 'f2', icon: 'credit-card', title: 'Flipkart EMI - Only for you!', subtitle: 'Upto ₹750 off | No Cost EMI*' },
-  { id: 'f3', icon: 'credit-card', title: 'Apply Now for Flipkart Axis Bank Credit Card', subtitle: '5% Cashback | ₹1,500 Gift Vouchers' },
+  { id: 'orders', label: 'Orders', icon: 'package', bg: '#E5EEFF', color: COLORS.primary },
+  { id: 'wishlist', label: 'Wishlist', icon: 'heart', bg: '#FDE7EC', color: COLORS.offerRed },
+  { id: 'coupons', label: 'Coupons', icon: 'gift', bg: COLORS.ratingGreenBg, color: COLORS.ratingGreen },
+  { id: 'help', label: 'Help Center', icon: 'headphones', bg: COLORS.etaGoldLight, color: COLORS.warning },
 ];
 
 const ProfileScreen = ({ navigation }) => {
@@ -29,7 +24,10 @@ const ProfileScreen = ({ navigation }) => {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.scrollContent, { paddingTop: Math.max(insets.top, 12) }]}>
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingTop: Math.max(insets.top, 12), paddingBottom: 100 + insets.bottom },
+        ]}>
         <View style={styles.userCard}>
           <View style={styles.userCardTopRow}>
             <Text style={styles.userEmail} numberOfLines={1}>{email}</Text>
@@ -53,38 +51,35 @@ const ProfileScreen = ({ navigation }) => {
             <TouchableOpacity
               key={action.id}
               activeOpacity={0.8}
-              onPress={() => action.id === 'orders' && navigation && navigation.navigate('Tracking')}
+              onPress={() => {
+                if (!navigation) return;
+                if (action.id === 'orders') navigation.navigate('MyOrders');
+                if (action.id === 'coupons') navigation.navigate('Coupons');
+                if (action.id === 'wishlist') navigation.navigate('Wishlist');
+                if (action.id === 'help') navigation.navigate('HelpCenter');
+              }}
               style={styles.quickCard}>
-              <Icon name={action.icon} size={18} color={COLORS.primary} />
+              <View style={[styles.quickIconCircle, { backgroundColor: action.bg }]}>
+                <Icon name={action.icon} size={18} color={action.color} />
+              </View>
               <Text style={styles.quickLabel}>{action.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => navigation && navigation.navigate('AccountSettings')}
-          style={styles.settingsEntryRow}>
-          <Icon name="settings" size={18} color={COLORS.primary} />
-          <Text style={styles.settingsEntryText}>Account Settings</Text>
-          <Icon name="chevron-right" size={18} color={COLORS.textTertiary} />
-        </TouchableOpacity>
-
-        <Text style={styles.sectionTitle}>Finance Options</Text>
-        <View style={styles.listGroup}>
-          {FINANCE_OPTIONS.map((item) => (
-            <AccountListRow key={item.id} icon={item.icon} label={item.title} subtitle={item.subtitle} />
-          ))}
-        </View>
-
-        <Text style={styles.sectionTitle}>Finance On UPI</Text>
-        <View style={styles.listGroup}>
-          <AccountListRow
-            icon="file-text"
-            label="superCard | Buy Now Pay later in 3"
-            subtitle="Enjoy 3% cashback | Activate Fk UPI and pay in 3 months"
-          />
-        </View>
+        {ACCOUNT_SECTIONS.map((section, index) => (
+          <View key={section.title} style={[styles.section, index > 0 && styles.sectionDivider]}>
+            <Text style={styles.sectionTitle}>{section.title}</Text>
+            {section.rows.map((row) => (
+              <AccountListRow
+                key={row.id}
+                icon={row.icon}
+                label={row.label}
+                onPress={row.route ? () => navigation && navigation.navigate(row.route) : undefined}
+              />
+            ))}
+          </View>
+        ))}
       </ScrollView>
     </View>
   );
@@ -95,9 +90,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  scrollContent: {
-    paddingBottom: 32,
-  },
+  scrollContent: {},
   userCard: {
     backgroundColor: COLORS.primaryLight,
     marginHorizontal: SPACING.l,
@@ -167,39 +160,36 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.m,
     paddingHorizontal: SPACING.m,
   },
+  quickIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.s,
+  },
   quickLabel: {
     fontSize: 13.5,
     fontWeight: '600',
     color: COLORS.textPrimary,
-    marginLeft: SPACING.s,
   },
-  settingsEntryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: SPACING.l,
+  section: {
+    backgroundColor: COLORS.surface,
     marginTop: SPACING.l,
-    paddingVertical: SPACING.m,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: COLORS.border,
+    paddingTop: SPACING.s,
   },
-  settingsEntryText: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginLeft: SPACING.s,
+  sectionDivider: {
+    marginTop: SPACING.s,
+    borderTopWidth: 6,
+    borderTopColor: COLORS.background,
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
     color: COLORS.textPrimary,
     paddingHorizontal: SPACING.l,
-    marginTop: SPACING.xl,
-    marginBottom: SPACING.xs,
-  },
-  listGroup: {
-    marginTop: SPACING.xs,
+    paddingTop: SPACING.m,
+    paddingBottom: SPACING.s,
   },
 });
 

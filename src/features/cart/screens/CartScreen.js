@@ -6,17 +6,14 @@ import { COLORS } from '../../../constants/colors';
 import { SPACING, RADIUS } from '../../../constants/spacing';
 import {
   StatusBarManager,
-  SegmentedPillTabs,
   PriceBlock,
   RatingBadge,
   EmptyCartIllustration,
   HorizontalProductRail,
 } from '../../../shared/components';
 
-const CART_TABS = [
-  { id: 'flipkart', label: 'Flipkart' },
-  { id: 'minutes', label: 'Minutes' },
-];
+const MIN_QTY = 1;
+const MAX_QTY = 10;
 
 const INITIAL_CART_ITEMS = [
   {
@@ -42,27 +39,40 @@ const SUGGESTED_PRODUCTS = [
 
 const CartScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
-  const [activeTab, setActiveTab] = useState('flipkart');
   const [items, setItems] = useState(INITIAL_CART_ITEMS);
 
   const handleRemove = (id) => setItems((prev) => prev.filter((item) => item.id !== id));
 
-  const mrpTotal = items.reduce((sum, item) => sum + item.mrp * item.qty, 0);
-  const fees = items.length ? 9 : 0;
-  const discounts = mrpTotal - items.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const finalTotal = mrpTotal + fees - discounts;
+  const handleQtyChange = (id, delta) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, qty: Math.min(MAX_QTY, Math.max(MIN_QTY, item.qty + delta)) }
+          : item
+      )
+    );
+  };
 
-  const tabs = CART_TABS.map((tab) => ({ ...tab, count: tab.id === 'flipkart' ? items.length : undefined }));
+  const mrpTotal = items.reduce((sum, item) => sum + item.mrp * item.qty, 0);
+  const itemTotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const fees = items.length ? 9 : 0;
+  const discounts = mrpTotal - itemTotal;
+  const finalTotal = itemTotal + fees;
 
   return (
     <View style={styles.container}>
       <StatusBarManager barStyle="dark-content" themeColor={COLORS.surface} />
 
       <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) }]}>
-        <Text style={styles.headerTitle}>My Cart</Text>
+        <View>
+          <Text style={styles.headerTitle}>My Cart</Text>
+          {items.length > 0 ? (
+            <Text style={styles.headerSubtitle}>
+              {items.length} item{items.length > 1 ? 's' : ''} in your cart
+            </Text>
+          ) : null}
+        </View>
       </View>
-
-      <SegmentedPillTabs tabs={tabs} activeId={activeTab} onSelect={(tab) => setActiveTab(tab.id)} />
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {items.length === 0 ? (
@@ -70,9 +80,10 @@ const CartScreen = ({ navigation }) => {
             <View style={styles.emptyPanel}>
               <EmptyCartIllustration />
               <Text style={styles.emptyTitle}>Your cart is empty!</Text>
+              <Text style={styles.emptySubtitle}>Looks like you haven't added anything yet.</Text>
               <TouchableOpacity
                 activeOpacity={0.85}
-                onPress={() => navigation && navigation.navigate('Home')}
+                onPress={() => navigation && navigation.navigate('MainTabs', { screen: 'Home' })}
                 style={styles.shopNowBtn}>
                 <Text style={styles.shopNowText}>Shop now</Text>
               </TouchableOpacity>
@@ -91,13 +102,16 @@ const CartScreen = ({ navigation }) => {
         ) : (
           <>
             <View style={styles.deliverRow}>
+              <View style={styles.deliverIconCircle}>
+                <Icon name="map-pin" size={14} color={COLORS.primary} />
+              </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.deliverText}>
                   Deliver to: <Text style={styles.deliverBold}>Harshvardhan P...</Text>, 457001
                 </Text>
                 <Text style={styles.deliverAddress}>84/2, Dheeraj shah nagar, Ratlam, Ratlam</Text>
               </View>
-              <TouchableOpacity style={styles.changeBtn}>
+              <TouchableOpacity activeOpacity={0.8} style={styles.changeBtn}>
                 <Text style={styles.changeBtnText}>Change</Text>
               </TouchableOpacity>
             </View>
@@ -105,18 +119,12 @@ const CartScreen = ({ navigation }) => {
             {items.map((item) => (
               <View key={item.id} style={styles.itemCard}>
                 <View style={styles.itemTopRow}>
-                  <View style={styles.itemImageCol}>
-                    <View style={styles.itemImageBox}>
-                      <Image source={{ uri: item.image }} style={styles.itemImage} resizeMode="cover" />
-                      <View style={styles.zoomTag}>
-                        <Icon name="search" size={10} color={COLORS.white} />
-                        <Text style={styles.zoomTagText}>Zoom</Text>
-                      </View>
+                  <View style={styles.itemImageBox}>
+                    <Image source={{ uri: item.image }} style={styles.itemImage} resizeMode="cover" />
+                    <View style={styles.zoomTag}>
+                      <Icon name="search" size={10} color={COLORS.white} />
+                      <Text style={styles.zoomTagText}>Zoom</Text>
                     </View>
-                    <TouchableOpacity style={styles.qtyBtn}>
-                      <Text style={styles.qtyText}>{`Qty: ${item.qty}`}</Text>
-                      <Icon name="chevron-down" size={14} color={COLORS.textPrimary} />
-                    </TouchableOpacity>
                   </View>
 
                   <View style={styles.itemInfo}>
@@ -135,7 +143,29 @@ const CartScreen = ({ navigation }) => {
                   </View>
                 </View>
 
-                <Text style={styles.deliveryText}>{`Delivery by ${item.deliveryDate}`}</Text>
+                <View style={styles.itemBottomRow}>
+                  <View style={styles.qtyStepper}>
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      disabled={item.qty <= MIN_QTY}
+                      onPress={() => handleQtyChange(item.id, -1)}
+                      style={[styles.qtyStepperBtn, item.qty <= MIN_QTY && styles.qtyStepperBtnDisabled]}>
+                      <Icon name="minus" size={13} color={item.qty <= MIN_QTY ? COLORS.textTertiary : COLORS.primary} />
+                    </TouchableOpacity>
+                    <Text style={styles.qtyStepperValue}>{item.qty}</Text>
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      disabled={item.qty >= MAX_QTY}
+                      onPress={() => handleQtyChange(item.id, 1)}
+                      style={[styles.qtyStepperBtn, item.qty >= MAX_QTY && styles.qtyStepperBtnDisabled]}>
+                      <Icon name="plus" size={13} color={item.qty >= MAX_QTY ? COLORS.textTertiary : COLORS.primary} />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.deliveryChip}>
+                    <Icon name="truck" size={11} color={COLORS.textSecondary} />
+                    <Text style={styles.deliveryText}>{`Delivery by ${item.deliveryDate}`}</Text>
+                  </View>
+                </View>
 
                 <View style={styles.actionsRow}>
                   <TouchableOpacity onPress={() => handleRemove(item.id)} style={styles.actionBtn}>
@@ -149,10 +179,12 @@ const CartScreen = ({ navigation }) => {
                   </TouchableOpacity>
                   <View style={styles.actionDivider} />
                   <TouchableOpacity
-                    onPress={() => navigation && navigation.navigate('Tracking')}
+                    onPress={() =>
+                      navigation && navigation.navigate('Checkout', { items: [item] })
+                    }
                     style={styles.actionBtn}>
-                    <Icon name="zap" size={15} color={COLORS.textSecondary} />
-                    <Text style={styles.actionText}>Buy this now</Text>
+                    <Icon name="zap" size={15} color={COLORS.primary} />
+                    <Text style={[styles.actionText, { color: COLORS.primary }]}>Buy this now</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -160,18 +192,44 @@ const CartScreen = ({ navigation }) => {
 
             <View style={styles.priceDetailsCard}>
               <Text style={styles.priceDetailsTitle}>Price Details</Text>
+
+              {discounts > 0 ? (
+                <View style={styles.savingsBanner}>
+                  <Icon name="check-circle" size={13} color={COLORS.ratingGreen} />
+                  <Text style={styles.savingsBannerText}>
+                    You will save <Text style={styles.savingsBannerAmount}>₹{discounts}</Text> on this order
+                  </Text>
+                </View>
+              ) : null}
+
               <View style={styles.priceRow}>
-                <Text style={styles.priceLabel}>MRP (incl. of all taxes)</Text>
+                <Text style={styles.priceLabel}>Price ({items.length} item{items.length > 1 ? 's' : ''})</Text>
                 <Text style={styles.priceValue}>{`₹${mrpTotal}`}</Text>
               </View>
+              {discounts > 0 ? (
+                <View style={styles.priceRow}>
+                  <Text style={styles.priceLabel}>Discount</Text>
+                  <Text style={[styles.priceValue, styles.discountValue]}>{`-₹${discounts}`}</Text>
+                </View>
+              ) : null}
               <View style={styles.priceRow}>
-                <Text style={styles.priceLabel}>Fees</Text>
+                <Text style={styles.priceLabel}>Delivery Fee</Text>
                 <Text style={styles.priceValue}>{`₹${fees}`}</Text>
               </View>
+              <View style={styles.priceDivider} />
               <View style={styles.priceRow}>
-                <Text style={styles.priceLabel}>Discounts</Text>
-                <Text style={[styles.priceValue, { color: COLORS.ratingGreen }]}>{`₹${discounts}`}</Text>
+                <Text style={styles.grandLabel}>Total Amount</Text>
+                <Text style={styles.grandValue}>{`₹${finalTotal}`}</Text>
               </View>
+            </View>
+
+            <View style={styles.suggestedWrapper}>
+              <Text style={styles.suggestedTitle}>You Might Also Like</Text>
+              <HorizontalProductRail
+                data={SUGGESTED_PRODUCTS}
+                style={{ marginTop: SPACING.m }}
+                onPressItem={(product) => navigation && navigation.navigate('ProductDetail', { product })}
+              />
             </View>
           </>
         )}
@@ -180,17 +238,22 @@ const CartScreen = ({ navigation }) => {
       {items.length > 0 ? (
         <View style={[styles.bottomBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
           <View>
-            <Text style={styles.bottomMrp}>{mrpTotal}</Text>
+            {mrpTotal > finalTotal ? <Text style={styles.bottomMrp}>₹{mrpTotal}</Text> : null}
             <View style={styles.bottomTotalRow}>
-              <Text style={styles.bottomTotal}>{finalTotal}</Text>
-              <Icon name="info" size={13} color={COLORS.textTertiary} style={{ marginLeft: 5 }} />
+              <Text style={styles.bottomTotal}>₹{finalTotal}</Text>
             </View>
+            {discounts > 0 ? (
+              <Text style={styles.bottomSavings}>You save ₹{discounts}</Text>
+            ) : (
+              <Text style={styles.bottomTotalLabel}>Total Amount</Text>
+            )}
           </View>
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => navigation && navigation.navigate('Tracking')}
+            onPress={() => navigation && navigation.navigate('Checkout', { items })}
             style={styles.placeOrderBtn}>
             <Text style={styles.placeOrderText}>Place Order</Text>
+            <Icon name="arrow-right" size={16} color={COLORS.textPrimary} />
           </TouchableOpacity>
         </View>
       ) : null}
@@ -201,41 +264,62 @@ const CartScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.mutedBg,
   },
   header: {
     backgroundColor: COLORS.white,
     paddingHorizontal: SPACING.l,
     paddingBottom: SPACING.m,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
+    zIndex: 1,
   },
   headerTitle: {
     fontSize: 22,
-    fontWeight: '500',
+    fontWeight: '700',
     color: COLORS.textPrimary,
+  },
+  headerSubtitle: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    marginTop: 2,
   },
   scrollContent: {
     paddingTop: SPACING.m,
-    paddingBottom: 140,
+    paddingBottom: 150,
   },
   emptyPanel: {
-    backgroundColor: COLORS.mutedBg,
+    backgroundColor: COLORS.white,
     alignItems: 'center',
     paddingVertical: SPACING.xxxl,
     marginHorizontal: SPACING.l,
-    borderRadius: RADIUS.m,
+    borderRadius: RADIUS.l,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 1,
   },
   emptyTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: COLORS.textPrimary,
     marginTop: SPACING.l,
+  },
+  emptySubtitle: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    marginTop: 4,
     marginBottom: SPACING.l,
   },
   shopNowBtn: {
     backgroundColor: COLORS.primary,
     paddingHorizontal: SPACING.xl,
     paddingVertical: SPACING.s + 2,
-    borderRadius: RADIUS.s,
+    borderRadius: RADIUS.round,
   },
   shopNowText: {
     color: COLORS.white,
@@ -244,10 +328,19 @@ const styles = StyleSheet.create({
   },
   suggestedWrapper: {
     marginTop: SPACING.xl,
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.l,
+    marginHorizontal: SPACING.l,
+    paddingVertical: SPACING.l,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 1,
   },
   suggestedTitle: {
-    fontSize: 17,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '700',
     color: COLORS.textPrimary,
     paddingHorizontal: SPACING.l,
   },
@@ -259,11 +352,27 @@ const styles = StyleSheet.create({
   },
   deliverRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     backgroundColor: COLORS.white,
+    borderRadius: RADIUS.l,
+    marginHorizontal: SPACING.l,
     paddingHorizontal: SPACING.l,
     paddingVertical: SPACING.m,
-    marginBottom: SPACING.s,
+    marginBottom: SPACING.m,
+    gap: SPACING.m,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  deliverIconCircle: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: COLORS.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   deliverText: {
     fontSize: 13,
@@ -280,34 +389,39 @@ const styles = StyleSheet.create({
   changeBtn: {
     borderWidth: 1,
     borderColor: COLORS.primary,
-    borderRadius: RADIUS.s,
+    borderRadius: RADIUS.round,
     paddingHorizontal: SPACING.m,
     paddingVertical: 6,
   },
   changeBtnText: {
     color: COLORS.primary,
-    fontWeight: '600',
+    fontWeight: '700',
     fontSize: 12,
   },
   itemCard: {
     backgroundColor: COLORS.white,
+    borderRadius: RADIUS.l,
+    marginHorizontal: SPACING.l,
     padding: SPACING.l,
-    marginBottom: SPACING.s,
+    marginBottom: SPACING.m,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 1,
   },
   itemTopRow: {
     flexDirection: 'row',
-    marginBottom: SPACING.s,
-  },
-  itemImageCol: {
-    marginRight: SPACING.m,
+    marginBottom: SPACING.m,
+    gap: SPACING.m,
   },
   itemImageBox: {
     width: 84,
     height: 84,
-    borderRadius: RADIUS.xs,
+    borderRadius: RADIUS.s,
     overflow: 'hidden',
     backgroundColor: COLORS.mutedBg,
-    marginBottom: SPACING.s,
+    position: 'relative',
   },
   itemImage: {
     width: '100%',
@@ -359,25 +473,47 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     marginLeft: 3,
   },
-  qtyBtn: {
+  itemBottomRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    paddingTop: SPACING.m,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.cardBorder,
+  },
+  qtyStepper: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: RADIUS.xs,
-    paddingHorizontal: SPACING.xs,
-    paddingVertical: 5,
+    borderRadius: RADIUS.round,
+    overflow: 'hidden',
   },
-  qtyText: {
-    fontSize: 11.5,
+  qtyStepperBtn: {
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.primaryLight,
+  },
+  qtyStepperBtnDisabled: {
+    backgroundColor: COLORS.mutedBg,
+  },
+  qtyStepperValue: {
+    minWidth: 28,
+    textAlign: 'center',
+    fontSize: 12.5,
+    fontWeight: '700',
     color: COLORS.textPrimary,
-    marginRight: 4,
+  },
+  deliveryChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   deliveryText: {
-    fontSize: 12,
+    fontSize: 11.5,
     color: COLORS.textSecondary,
-    marginTop: SPACING.s,
   },
   actionsRow: {
     flexDirection: 'row',
@@ -385,7 +521,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.m,
     paddingTop: SPACING.m,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: COLORS.cardBorder,
   },
   actionBtn: {
     flex: 1,
@@ -400,20 +536,44 @@ const styles = StyleSheet.create({
   actionDivider: {
     width: 1,
     height: 28,
-    backgroundColor: COLORS.border,
+    backgroundColor: COLORS.cardBorder,
   },
   priceDetailsCard: {
-    backgroundColor: COLORS.mutedBg,
-    borderRadius: RADIUS.m,
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.l,
     marginHorizontal: SPACING.l,
     padding: SPACING.l,
-    marginTop: SPACING.s,
+    marginBottom: SPACING.m,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 1,
   },
   priceDetailsTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
     color: COLORS.textPrimary,
     marginBottom: SPACING.m,
+  },
+  savingsBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.ratingGreenBg,
+    borderRadius: RADIUS.s,
+    paddingHorizontal: SPACING.m,
+    paddingVertical: SPACING.s + 2,
+    marginBottom: SPACING.m,
+    gap: SPACING.s,
+  },
+  savingsBannerText: {
+    flex: 1,
+    fontSize: 12,
+    fontWeight: '600',
+    color: COLORS.ratingGreen,
+  },
+  savingsBannerAmount: {
+    fontWeight: '800',
   },
   priceRow: {
     flexDirection: 'row',
@@ -422,10 +582,30 @@ const styles = StyleSheet.create({
   },
   priceLabel: {
     fontSize: 13,
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
   },
   priceValue: {
     fontSize: 13,
+    color: COLORS.textPrimary,
+    fontWeight: '600',
+  },
+  discountValue: {
+    color: COLORS.ratingGreen,
+  },
+  priceDivider: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    borderStyle: 'dashed',
+    marginBottom: SPACING.s,
+  },
+  grandLabel: {
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: COLORS.textPrimary,
+  },
+  grandValue: {
+    fontSize: 14.5,
+    fontWeight: '800',
     color: COLORS.textPrimary,
   },
   bottomBar: {
@@ -434,16 +614,21 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: COLORS.white,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
     paddingHorizontal: SPACING.l,
     paddingTop: SPACING.m,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 6,
   },
   bottomMrp: {
-    fontSize: 13,
+    fontSize: 12,
     color: COLORS.textSecondary,
     textDecorationLine: 'line-through',
   },
@@ -452,15 +637,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bottomTotal: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 20,
+    fontWeight: '800',
     color: COLORS.textPrimary,
   },
+  bottomTotalLabel: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+    marginTop: 1,
+  },
+  bottomSavings: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: COLORS.ratingGreen,
+    marginTop: 1,
+  },
   placeOrderBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: COLORS.ctaYellow,
     paddingHorizontal: SPACING.xxl,
     paddingVertical: SPACING.m,
-    borderRadius: RADIUS.s,
+    borderRadius: RADIUS.round,
+    gap: SPACING.s,
   },
   placeOrderText: {
     color: COLORS.textPrimary,

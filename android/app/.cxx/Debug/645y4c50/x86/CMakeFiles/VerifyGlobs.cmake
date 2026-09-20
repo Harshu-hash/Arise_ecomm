@@ -12,6 +12,31 @@ if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   file(TOUCH_NOCREATE "D:/Arise/Ecommerce/android/app/.cxx/Debug/645y4c50/x86/CMakeFiles/cmake.verify_globs")
 endif()
 
+# react_codegen_SRCS at D:/Arise/Ecommerce/node_modules/@react-native-community/blur/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "D:/Arise/Ecommerce/node_modules/@react-native-community/blur/android/build/generated/source/codegen/jni/*.cpp")
+set(OLD_GLOB
+  "D:/Arise/Ecommerce/node_modules/@react-native-community/blur/android/build/generated/source/codegen/jni/rnblurview-generated.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "D:/Arise/Ecommerce/android/app/.cxx/Debug/645y4c50/x86/CMakeFiles/cmake.verify_globs")
+endif()
+
+# react_codegen_SRCS at D:/Arise/Ecommerce/node_modules/@react-native-community/blur/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "D:/Arise/Ecommerce/node_modules/@react-native-community/blur/android/build/generated/source/codegen/jni/react/renderer/components/rnblurview/*.cpp")
+set(OLD_GLOB
+  "D:/Arise/Ecommerce/node_modules/@react-native-community/blur/android/build/generated/source/codegen/jni/react/renderer/components/rnblurview/ComponentDescriptors.cpp"
+  "D:/Arise/Ecommerce/node_modules/@react-native-community/blur/android/build/generated/source/codegen/jni/react/renderer/components/rnblurview/EventEmitters.cpp"
+  "D:/Arise/Ecommerce/node_modules/@react-native-community/blur/android/build/generated/source/codegen/jni/react/renderer/components/rnblurview/Props.cpp"
+  "D:/Arise/Ecommerce/node_modules/@react-native-community/blur/android/build/generated/source/codegen/jni/react/renderer/components/rnblurview/ShadowNodes.cpp"
+  "D:/Arise/Ecommerce/node_modules/@react-native-community/blur/android/build/generated/source/codegen/jni/react/renderer/components/rnblurview/States.cpp"
+  "D:/Arise/Ecommerce/node_modules/@react-native-community/blur/android/build/generated/source/codegen/jni/react/renderer/components/rnblurview/rnblurviewJSI-generated.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "D:/Arise/Ecommerce/android/app/.cxx/Debug/645y4c50/x86/CMakeFiles/cmake.verify_globs")
+endif()
+
 # react_codegen_SRCS at D:/Arise/Ecommerce/node_modules/@shopify/flash-list/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
 file(GLOB NEW_GLOB LIST_DIRECTORIES true "D:/Arise/Ecommerce/node_modules/@shopify/flash-list/android/build/generated/source/codegen/jni/*.cpp")
 set(OLD_GLOB

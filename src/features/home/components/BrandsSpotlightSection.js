@@ -1,26 +1,30 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { COLORS } from '../../../constants/colors';
 import { SPACING, RADIUS } from '../../../constants/spacing';
 
+/** 3-column brand ad row — image with an AD tag, discount headline + subtitle below. */
 const BrandsSpotlightSection = ({ brands, onPressBrand }) => (
   <View style={styles.wrapper}>
     <Text style={styles.title}>Brands in Spotlight</Text>
-    <FlatList
-      horizontal
-      data={brands}
-      keyExtractor={(item) => item.id}
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: SPACING.l }}
-      renderItem={({ item }) => (
-        <TouchableOpacity activeOpacity={0.85} onPress={() => onPressBrand && onPressBrand(item)} style={styles.card}>
-          <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
-          <View style={styles.adTag}>
-            <Text style={styles.adTagText}>AD</Text>
+    <View style={styles.row}>
+      {brands.map((brand) => (
+        <TouchableOpacity
+          key={brand.id}
+          activeOpacity={0.85}
+          onPress={() => onPressBrand && onPressBrand(brand)}
+          style={styles.card}>
+          <View style={styles.imageBox}>
+            <Image source={{ uri: brand.image }} style={styles.image} resizeMode="cover" />
+            <View style={styles.adTag}>
+              <Text style={styles.adTagText}>AD</Text>
+            </View>
           </View>
+          <Text style={styles.discount} numberOfLines={1}>{brand.discount}</Text>
+          <Text style={styles.subtitle} numberOfLines={1}>{brand.subtitle}</Text>
         </TouchableOpacity>
-      )}
-    />
+      ))}
+    </View>
   </View>
 );
 
@@ -37,31 +41,50 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.l,
     marginBottom: SPACING.m,
   },
+  row: {
+    flexDirection: 'row',
+    paddingHorizontal: SPACING.l,
+    gap: SPACING.s,
+  },
   card: {
-    width: 150,
-    height: 90,
+    flex: 1,
+  },
+  imageBox: {
+    position: 'relative',
     borderRadius: RADIUS.s,
     overflow: 'hidden',
-    marginRight: SPACING.m,
     backgroundColor: COLORS.mutedBg,
   },
   image: {
     width: '100%',
-    height: '100%',
+    aspectRatio: 1.35,
   },
   adTag: {
     position: 'absolute',
     right: 6,
-    bottom: 6,
-    backgroundColor: 'rgba(0,0,0,0.55)',
+    top: 6,
+    backgroundColor: 'rgba(255,255,255,0.85)',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 3,
   },
   adTagText: {
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     fontSize: 9,
     fontWeight: '700',
+  },
+  discount: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+    textAlign: 'center',
+    marginTop: SPACING.s,
+  },
+  subtitle: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    marginTop: 2,
   },
 });
 

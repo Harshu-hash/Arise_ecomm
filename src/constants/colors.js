@@ -17,7 +17,7 @@ export const COLORS = {
   campaignGradientStart: '#F5443A', // home header / campaign banner gradient
   campaignGradientEnd: '#FF8A3D',
 
-  background: '#F1F3F6', // page background
+  background: '#FFFFFF', // page background
   surface: '#FFFFFF',
   cardBorder: '#F0F0F0',
 

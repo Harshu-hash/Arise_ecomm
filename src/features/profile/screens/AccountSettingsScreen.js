@@ -5,41 +5,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import { COLORS } from '../../../constants/colors';
 import { SPACING } from '../../../constants/spacing';
 import { StatusBarManager, AccountListRow } from '../../../shared/components';
-
-const SECTIONS = [
-  {
-    title: 'Account Settings',
-    rows: [
-      { id: 'plus', icon: 'award', label: 'Flipkart Plus' },
-      { id: 'devices', icon: 'smartphone', label: 'Manage Devices' },
-      { id: 'edit', icon: 'user', label: 'Edit Profile' },
-      { id: 'cards', icon: 'credit-card', label: 'Saved Credit / Debit & Gift Cards' },
-      { id: 'addresses', icon: 'map-pin', label: 'Saved Addresses' },
-      { id: 'language', icon: 'globe', label: 'Select Language' },
-      { id: 'notifications', icon: 'bell', label: 'Notification Settings' },
-      { id: 'privacy', icon: 'shield', label: 'Privacy Center' },
-    ],
-  },
-  {
-    title: 'My Activity',
-    rows: [
-      { id: 'reviews', icon: 'edit-2', label: 'Reviews' },
-      { id: 'qa', icon: 'message-square', label: 'Questions & Answers' },
-    ],
-  },
-  {
-    title: 'Earn with Flipkart',
-    rows: [{ id: 'sell', icon: 'shopping-bag', label: 'Sell on Flipkart' }],
-  },
-  {
-    title: 'Feedback & Information',
-    rows: [
-      { id: 'rate', icon: 'star', label: 'Rate Us' },
-      { id: 'about', icon: 'info', label: 'About Flipkart' },
-      { id: 'terms', icon: 'file-text', label: 'Terms & Conditions' },
-    ],
-  },
-];
+import { ACCOUNT_SECTIONS } from '../constants/accountSections';
 
 const AccountSettingsScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
@@ -56,11 +22,16 @@ const AccountSettingsScreen = ({ navigation }) => {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {SECTIONS.map((section, index) => (
+        {ACCOUNT_SECTIONS.map((section, index) => (
           <View key={section.title} style={[styles.section, index > 0 && styles.sectionDivider]}>
             <Text style={styles.sectionTitle}>{section.title}</Text>
             {section.rows.map((row) => (
-              <AccountListRow key={row.id} icon={row.icon} label={row.label} />
+              <AccountListRow
+                key={row.id}
+                icon={row.icon}
+                label={row.label}
+                onPress={row.route ? () => navigation && navigation.navigate(row.route) : undefined}
+              />
             ))}
           </View>
         ))}

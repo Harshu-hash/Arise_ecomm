@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     marginHorizontal: SPACING.l,
     marginTop: SPACING.l,
     overflow: 'hidden',
+    backgroundColor: COLORS.campaignGradientStart,
   },
   content: {
     padding: SPACING.l,
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
     width: '100%',
     aspectRatio: 1,
     borderRadius: RADIUS.s,
-    backgroundColor: COLORS.mutedBg,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     overflow: 'hidden',
     position: 'relative',
   },

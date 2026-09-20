@@ -1,3 +1,4 @@
+D:\Arise\Ecommerce\node_modules\@react-native-community\blur\android\build\generated\source\codegen\jni\CMakeLists.txt
 D:\Arise\Ecommerce\node_modules\@shopify\flash-list\android\build\generated\source\codegen\jni\CMakeLists.txt
 D:\Arise\Ecommerce\node_modules\lottie-react-native\android\build\generated\source\codegen\jni\CMakeLists.txt
 D:\Arise\Ecommerce\node_modules\react-native-config\android\build\generated\source\codegen\jni\CMakeLists.txt

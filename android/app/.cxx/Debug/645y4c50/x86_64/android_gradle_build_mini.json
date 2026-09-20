@@ -1,5 +1,6 @@
 {
   "buildFiles": [
+    "D:\\Arise\\Ecommerce\\node_modules\\@react-native-community\\blur\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
     "D:\\Arise\\Ecommerce\\node_modules\\@shopify\\flash-list\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
     "D:\\Arise\\Ecommerce\\node_modules\\lottie-react-native\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
     "D:\\Arise\\Ecommerce\\node_modules\\react-native-config\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
@@ -92,6 +93,11 @@
       "artifactName": "core",
       "abi": "x86_64",
       "output": "D:\\Arise\\Ecommerce\\android\\app\\.cxx\\Debug\\645y4c50\\x86_64\\RNMmkvSpec_cxxmodule_autolinked_build\\core\\libcore.a",
+      "runtimeFiles": []
+    },
+    "react_codegen_rnblurview::@9a34ffec6e39b5c9049e": {
+      "artifactName": "react_codegen_rnblurview",
+      "abi": "x86_64",
       "runtimeFiles": []
     },
     "react-native-mmkv::@4ae6a1e65d3e68ba0197": {

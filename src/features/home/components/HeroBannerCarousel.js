@@ -14,7 +14,7 @@ const HeroBannerCarousel = ({ banners }) => {
   }).current;
 
   return (
-    <View>
+    <View style={styles.wrapper}>
       <FlatList
         data={banners}
         horizontal
@@ -49,9 +49,13 @@ const HeroBannerCarousel = ({ banners }) => {
 };
 
 const styles = StyleSheet.create({
+  wrapper: {
+    backgroundColor: COLORS.white,
+  },
   image: {
     width: SCREEN_WIDTH,
     height: 190,
+    backgroundColor: COLORS.white,
   },
   dotsRow: {
     position: 'absolute',

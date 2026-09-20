@@ -2,40 +2,54 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { COLORS } from '../../../constants/colors';
 import { SPACING, RADIUS } from '../../../constants/spacing';
+import { GradientBackground } from '../../../shared/components';
 
 /** "Still looking for these?" recently-viewed rail — square image + 2-line label. */
 const RecentlyViewedRail = ({ items, onPressItem }) => (
   <View style={styles.wrapper}>
+    <GradientBackground colors={['#CFE3FF', '#FFD9EC']} id="recently_viewed_grad" />
     <Text style={styles.title}>Still looking for these?</Text>
-    <FlatList
-      horizontal
-      data={items}
-      keyExtractor={(item) => item.id}
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: SPACING.l }}
-      renderItem={({ item }) => (
-        <TouchableOpacity activeOpacity={0.85} onPress={() => onPressItem && onPressItem(item)} style={styles.card}>
-          <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
-          <Text style={styles.itemTitle} numberOfLines={1}>{item.title}</Text>
-          <Text style={styles.itemSubtitle} numberOfLines={1}>{item.subtitle}</Text>
-        </TouchableOpacity>
-      )}
-    />
+    {/*
+      A plain View with an explicit height, not FlatList's own `style`, is what
+      guarantees this row's full content height reaches the wrapper's overflow:hidden
+      clip — see the matching note in TopValueDealsSection.js.
+    */}
+    <View style={styles.listWrapper}>
+      <FlatList
+        horizontal
+        data={items}
+        keyExtractor={(item) => item.id}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: SPACING.l }}
+        renderItem={({ item }) => (
+          <TouchableOpacity activeOpacity={0.85} onPress={() => onPressItem && onPressItem(item)} style={styles.card}>
+            <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
+            <Text style={styles.itemTitle} numberOfLines={1}>{item.title}</Text>
+            <Text style={styles.itemSubtitle} numberOfLines={1}>{item.subtitle}</Text>
+          </TouchableOpacity>
+        )}
+      />
+    </View>
   </View>
 );
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: COLORS.white,
-    paddingTop: SPACING.l,
-    paddingBottom: SPACING.m,
+    position: 'relative',
+    overflow: 'hidden',
+    backgroundColor: '#FFD9EC',
+    paddingTop: SPACING.m,
+    paddingBottom: 8,
   },
   title: {
     fontSize: 17,
     fontWeight: '600',
     color: COLORS.textPrimary,
     paddingHorizontal: SPACING.l,
-    marginBottom: SPACING.m,
+    marginBottom: SPACING.s,
+  },
+  listWrapper: {
+    height: 140,
   },
   card: {
     width: 100,
@@ -50,12 +64,15 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     fontSize: 12,
+    lineHeight: 16,
     color: COLORS.textPrimary,
   },
   itemSubtitle: {
     fontSize: 12,
+    lineHeight: 16,
     fontWeight: '700',
     color: COLORS.textPrimary,
+    marginTop: 2,
   },
 });
 

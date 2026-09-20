@@ -1,14 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Image, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Feather';
 import { COLORS } from '../../../constants/colors';
 import { SPACING, RADIUS } from '../../../constants/spacing';
-import { GradientBackground, TopBrandTabs, CategoryTabStrip } from '../../../shared/components';
-import { BRAND_TABS, CATEGORY_TABS } from '../data/homeData';
+import { GradientBackground, TopBrandTabs, CategoryTabStrip, AnimatedSearchPlaceholder, DribbleFlipImage } from '../../../shared/components';
+import { BRAND_TABS, CATEGORY_TABS, SEARCH_PLACEHOLDERS } from '../data/homeData';
 
 const DEFAULT_TOP_PORTION_HEIGHT = 100;
 const DEFAULT_REST_HEIGHT = 132; // search bar + category strip + their margins/padding
+const DEFAULT_GRADIENT = ['#FFCB9D', '#FFFFFF'];
+const GRADIENT_FADE_DURATION = 380;
+
+const getGradientForCategory = (categoryId) =>
+  CATEGORY_TABS.find((tab) => tab.id === categoryId)?.gradient || DEFAULT_GRADIENT;
 
 /**
  * Home top zone: campaign gradient + brand tabs + location row + search bar + category strip.
@@ -23,10 +28,13 @@ const LocationSearchHeader = ({
   onAddressPress,
   onSearchPress,
   onScanPress,
+  onCouponPress,
+  onWalletPress,
   activeCategoryId,
   onSelectCategory,
+  activeBrandId = 'flipkart',
+  onBrandSelect,
   scrollY,
-  categoryRowScrollY,
   onHeaderHeight,
 }) => {
   const insets = useSafeAreaInsets();
@@ -35,6 +43,30 @@ const LocationSearchHeader = ({
   const [restHeight, setRestHeight] = useState(DEFAULT_REST_HEIGHT);
   const measuredTopRef = useRef(false);
   const measuredRestRef = useRef(false);
+
+  const [baseGradient, setBaseGradient] = useState(() => getGradientForCategory(activeCategoryId));
+  const [incomingGradient, setIncomingGradient] = useState(null);
+  const gradientFade = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const nextGradient = getGradientForCategory(activeCategoryId);
+    if (nextGradient[0] === baseGradient[0] && nextGradient[1] === baseGradient[1]) return;
+
+    setIncomingGradient(nextGradient);
+    gradientFade.setValue(0);
+    Animated.timing(gradientFade, {
+      toValue: 1,
+      duration: GRADIENT_FADE_DURATION,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished) {
+        setBaseGradient(nextGradient);
+        setIncomingGradient(null);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCategoryId]);
 
   // Derived (never independently measured) so it can never drift out of sync with the
   // translateY clamp below — that mismatch was what left a leftover strip of orange
@@ -71,29 +103,44 @@ const LocationSearchHeader = ({
 
   return (
     <Animated.View style={[styles.container, { transform: [{ translateY }] }]}>
-      <GradientBackground colors={[COLORS.campaignGradientStart, COLORS.campaignGradientEnd]} />
+      <GradientBackground colors={baseGradient} />
+      {incomingGradient && (
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity: gradientFade }]}>
+          <GradientBackground colors={incomingGradient} />
+        </Animated.View>
+      )}
 
       <View style={{ paddingTop: topPaddingValue }}>
         <Animated.View onLayout={handleTopPortionLayout} style={{ opacity: topPortionOpacity }}>
-          <TopBrandTabs tabs={BRAND_TABS} activeId="flipkart" />
+          <TopBrandTabs tabs={BRAND_TABS} activeId={activeBrandId} onSelect={onBrandSelect} />
 
           <View style={styles.locationRow}>
             <TouchableOpacity activeOpacity={0.8} onPress={onAddressPress} style={styles.addressBtn}>
-              <Icon name="map-pin" size={13} color={COLORS.textPrimary} />
+              <Icon name="map-pin" size={15} color={COLORS.textPrimary} />
               <Text style={styles.addressText} numberOfLines={1}>{address}</Text>
               <Icon name="chevron-down" size={14} color={COLORS.textPrimary} />
             </TouchableOpacity>
-            <View style={styles.coinPill}>
-              <Icon name="zap" size={12} color={COLORS.ctaYellow} />
+            <TouchableOpacity activeOpacity={0.8} onPress={onCouponPress} style={styles.couponPill}>
+              <DribbleFlipImage
+                source={require('../../../assets/images/Coupon.png')}
+                style={styles.couponIcon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.8} onPress={onWalletPress} style={styles.coinPill}>
+              <Image
+                source={require('../../../assets/images/coin-image.png')}
+                style={styles.coinIcon}
+                resizeMode="contain"
+              />
               <Text style={styles.coinText}>0</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </Animated.View>
 
         <View onLayout={handleRestLayout} style={styles.restBlock}>
           <TouchableOpacity activeOpacity={0.9} onPress={onSearchPress} style={styles.searchBar}>
             <Icon name="search" size={18} color={COLORS.textSecondary} style={{ marginRight: SPACING.s }} />
-            <Text style={styles.searchPlaceholder}>Search for products, brands and more</Text>
+            <AnimatedSearchPlaceholder phrases={SEARCH_PLACEHOLDERS} style={styles.searchPlaceholder} />
             <Icon name="camera" size={17} color={COLORS.textSecondary} style={{ marginRight: SPACING.s }} />
             <Icon name="mic" size={17} color={COLORS.textSecondary} />
           </TouchableOpacity>
@@ -105,7 +152,6 @@ const LocationSearchHeader = ({
             style={styles.categoryStrip}
             scrollY={scrollY}
             collapseDistance={topPortionHeight}
-            heightScrollY={categoryRowScrollY}
           />
         </View>
       </View>
@@ -121,7 +167,7 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 20,
     elevation: 20,
-    backgroundColor: COLORS.campaignGradientEnd, // Safe fallback to fill any rendering gaps
+    backgroundColor: '#FFFFFF', // Safe fallback to fill any rendering gaps, matches gradient end
   },
   locationRow: {
     flexDirection: 'row',
@@ -134,10 +180,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.55)',
-    paddingHorizontal: SPACING.s,
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    paddingHorizontal: SPACING.m,
     paddingVertical: 7,
-    borderRadius: RADIUS.s,
+    borderRadius: 20,
     marginRight: SPACING.s,
     gap: 6,
   },
@@ -150,11 +196,28 @@ const styles = StyleSheet.create({
   coinPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.55)',
+    backgroundColor: 'rgba(255,255,255,0.9)',
     paddingHorizontal: SPACING.s,
     paddingVertical: 7,
-    borderRadius: RADIUS.s,
+    borderRadius: 16,
     gap: 4,
+  },
+  coinIcon: {
+    width: 14,
+    height: 14,
+  },
+  couponPill: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    width: 34,
+    height: 34,
+    borderRadius: 16,
+    marginRight: SPACING.s,
+  },
+  couponIcon: {
+    width: 18,
+    height: 18,
   },
   coinText: {
     fontSize: 12,
@@ -175,7 +238,8 @@ const styles = StyleSheet.create({
   },
   searchPlaceholder: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 15,
+    fontWeight: '500',
     color: COLORS.textSecondary,
   },
   categoryStrip: {

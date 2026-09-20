@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  StatusBar,
+  Animated,
+  Easing,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Feather';
@@ -21,18 +22,128 @@ const INITIAL_STEPS = [
   { id: '5', title: 'Delivered', sub: 'Doorstep handover', active: false, completed: false },
 ];
 
+/** Press feedback wrapper: scales down on press-in, springs back on release. */
+const Bouncy = ({ onPress, style, children, disabled }) => {
+  const scale = useRef(new Animated.Value(1)).current;
+  const pressIn = () => Animated.spring(scale, { toValue: 0.9, useNativeDriver: true, speed: 60, bounciness: 0 }).start();
+  const pressOut = () => Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 24, bounciness: 9 }).start();
+  return (
+    <Animated.View style={{ transform: [{ scale }] }}>
+      <TouchableOpacity
+        activeOpacity={0.85}
+        disabled={disabled}
+        onPress={onPress}
+        onPressIn={pressIn}
+        onPressOut={pressOut}
+        style={style}>
+        {children}
+      </TouchableOpacity>
+    </Animated.View>
+  );
+};
+
+/** Step dot that pops with a spring bounce the moment it flips to completed. */
+const StepDot = ({ step }) => {
+  const scale = useRef(new Animated.Value(1)).current;
+  const wasCompleted = useRef(step.completed);
+
+  useEffect(() => {
+    if (step.completed && !wasCompleted.current) {
+      Animated.sequence([
+        Animated.timing(scale, { toValue: 1.4, duration: 150, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+        Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 10 }),
+      ]).start();
+    }
+    wasCompleted.current = step.completed;
+  }, [step.completed, scale]);
+
+  return (
+    <Animated.View
+      style={[
+        styles.stepDot,
+        step.completed && styles.stepDotCompleted,
+        step.active && styles.stepDotActive,
+        { transform: [{ scale }] },
+      ]}>
+      <Icon
+        name={step.completed ? 'check' : step.active ? 'zap' : 'circle'}
+        size={12}
+        color={COLORS.white}
+      />
+    </Animated.View>
+  );
+};
+
 const TrackingScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const [steps, setSteps] = useState(INITIAL_STEPS);
-  const [toastMsg, setToastMsg] = useState(null);
   const [copiedOtp, setCopiedOtp] = useState(false);
+  const copyResetTimer = useRef(null);
 
-  const showToast = (msg) => {
-    // Toast notifications removed
-  };
+  const isFullyDelivered = steps[4].completed;
+
+  // Staggered card entrance on mount.
+  const cardAnims = useRef([0, 1, 2, 3].map(() => new Animated.Value(0))).current;
+  useEffect(() => {
+    Animated.stagger(
+      90,
+      cardAnims.map((v) =>
+        Animated.timing(v, { toValue: 1, duration: 420, easing: Easing.out(Easing.cubic), useNativeDriver: true })
+      )
+    ).start();
+  }, [cardAnims]);
+  const cardStyle = (v) => ({
+    opacity: v,
+    transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [18, 0] }) }],
+  });
+
+  // Pulsing "live" dot next to the header status text.
+  const liveDot = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (isFullyDelivered) return undefined;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(liveDot, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(liveDot, { toValue: 0, duration: 700, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [isFullyDelivered, liveDot]);
+
+  // Rider marker pulse ring + gentle "breathing" ETA text, only while order is in transit.
+  const riderPulse = useRef(new Animated.Value(0)).current;
+  const etaBreath = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (isFullyDelivered) return undefined;
+    const ringLoop = Animated.loop(
+      Animated.timing(riderPulse, { toValue: 1, duration: 1400, easing: Easing.out(Easing.quad), useNativeDriver: true })
+    );
+    const breathLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(etaBreath, { toValue: 1, duration: 900, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(etaBreath, { toValue: 0, duration: 900, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+      ])
+    );
+    ringLoop.start();
+    breathLoop.start();
+    return () => {
+      ringLoop.stop();
+      breathLoop.stop();
+    };
+  }, [isFullyDelivered, riderPulse, etaBreath]);
+
+  useEffect(
+    () => () => {
+      if (copyResetTimer.current) clearTimeout(copyResetTimer.current);
+    },
+    []
+  );
 
   const handleCopyOtp = () => {
     setCopiedOtp(true);
+    if (copyResetTimer.current) clearTimeout(copyResetTimer.current);
+    copyResetTimer.current = setTimeout(() => setCopiedOtp(false), 2000);
   };
 
   const handleSimulateStatus = () => {
@@ -45,7 +156,13 @@ const TrackingScreen = ({ navigation }) => {
     );
   };
 
-  const isFullyDelivered = steps[4].completed;
+  const riderRingStyle = {
+    opacity: riderPulse.interpolate({ inputRange: [0, 1], outputRange: [0.45, 0] }),
+    transform: [{ scale: riderPulse.interpolate({ inputRange: [0, 1], outputRange: [1, 2.1] }) }],
+  };
+  const etaStyle = {
+    transform: [{ scale: etaBreath.interpolate({ inputRange: [0, 1], outputRange: [1, 1.035] }) }],
+  };
 
   return (
     <View style={styles.container}>
@@ -54,20 +171,47 @@ const TrackingScreen = ({ navigation }) => {
       {/* Header */}
       <View style={[styles.header, { paddingTop: Math.max(insets.top, 12) }]}>
         <TouchableOpacity
-          onPress={() => navigation && navigation.navigate('Home')}
+          onPress={() => navigation && navigation.navigate('MainTabs', { screen: 'Home' })}
           style={styles.backBtn}>
           <Icon name="arrow-left" size={20} color={COLORS.textPrimary} />
         </TouchableOpacity>
 
         <View style={styles.headerTitleContainer}>
           <Text style={styles.headerTitle}>Order #ORD-84920</Text>
-          <Text style={[styles.headerSubtitle, isFullyDelivered && { color: COLORS.accentGreen }]}>
-            {isFullyDelivered ? '✓ Delivered' : '⚡ Live Status'}
-          </Text>
+          <View style={styles.headerStatusRow}>
+            {!isFullyDelivered ? (
+              <Animated.View
+                style={[
+                  styles.liveDot,
+                  {
+                    opacity: liveDot.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] }),
+                    transform: [{ scale: liveDot.interpolate({ inputRange: [0, 1], outputRange: [0.8, 1.2] }) }],
+                  },
+                ]}
+              />
+            ) : null}
+            <Text style={[styles.headerSubtitle, isFullyDelivered && { color: COLORS.accentGreen }]}>
+              {isFullyDelivered ? '✓ Delivered' : 'Live Status'}
+            </Text>
+          </View>
         </View>
 
         <TouchableOpacity
-          onPress={() => showToast('Connecting to 24x7 Customer Support... 🎧')}
+          onPress={() =>
+            navigation &&
+            navigation.navigate('OrderIssue', {
+              order: {
+                id: 'ORD-84920',
+                name: 'Your order',
+                image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=400&q=80',
+                price: 1299,
+                date: 'Today',
+                status: isFullyDelivered ? 'Delivered' : 'Out for Delivery',
+                canCancel: !isFullyDelivered,
+                canReturn: isFullyDelivered,
+              },
+            })
+          }
           style={styles.supportBtn}>
           <Icon name="help-circle" size={18} color={COLORS.primary} />
           <Text style={styles.supportText}>Help</Text>
@@ -76,41 +220,49 @@ const TrackingScreen = ({ navigation }) => {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {/* Delivery OTP Code Banner */}
-        <View style={styles.otpBanner}>
+        <Animated.View style={[styles.otpBanner, cardStyle(cardAnims[0])]}>
           <View style={styles.otpLeft}>
             <Text style={styles.otpLabel}>DELIVERY CODE</Text>
             <Text style={styles.otpCode}>4829</Text>
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.otpSubtext}>Share this code with your delivery partner at doorstep</Text>
-            <TouchableOpacity activeOpacity={0.8} onPress={handleCopyOtp} style={styles.copyBtn}>
-              <Text style={styles.copyBtnText}>{copiedOtp ? 'COPIED ✓' : 'COPY CODE'}</Text>
-            </TouchableOpacity>
+            <Bouncy onPress={handleCopyOtp} style={styles.copyBtn}>
+              <View style={styles.copyBtnRow}>
+                <Icon name={copiedOtp ? 'check' : 'copy'} size={11} color={COLORS.primary} />
+                <Text style={styles.copyBtnText}>{copiedOtp ? 'COPIED' : 'COPY CODE'}</Text>
+              </View>
+            </Bouncy>
           </View>
-        </View>
+        </Animated.View>
 
         {/* Live Map Preview Card */}
-        <View style={styles.mapCard}>
+        <Animated.View style={[styles.mapCard, cardStyle(cardAnims[1])]}>
           <View style={styles.mapGraphic}>
             <Icon name="map-pin" size={24} color={COLORS.primary} style={styles.storePin} />
             <View style={[styles.routeLine, isFullyDelivered && { backgroundColor: COLORS.accentGreen }]} />
-            <View style={[styles.riderMarker, isFullyDelivered && { backgroundColor: COLORS.accentGreen }]}>
-              <Icon name={isFullyDelivered ? 'check' : 'navigation'} size={18} color={COLORS.white} />
+            <View style={styles.riderMarkerWrap}>
+              {!isFullyDelivered ? <Animated.View style={[styles.riderPulseRing, riderRingStyle]} /> : null}
+              <View style={[styles.riderMarker, isFullyDelivered && { backgroundColor: COLORS.accentGreen }]}>
+                <Icon name={isFullyDelivered ? 'check' : 'navigation'} size={18} color={COLORS.white} />
+              </View>
             </View>
             <View style={[styles.routeLineDotted, isFullyDelivered && { backgroundColor: COLORS.accentGreen }]} />
             <Icon name="home" size={24} color={COLORS.accentGreen} style={styles.homePin} />
           </View>
 
           <View style={styles.etaBox}>
-            <Text style={styles.etaTime}>{isFullyDelivered ? 'DELIVERED 🎉' : '8 MINS'}</Text>
+            <Animated.Text style={[styles.etaTime, etaStyle]}>
+              {isFullyDelivered ? 'DELIVERED 🎉' : '8 MINS'}
+            </Animated.Text>
             <Text style={styles.etaLabel}>
               {isFullyDelivered ? 'ORDER DELIVERED TO DOORSTEP' : 'ESTIMATED ARRIVAL TIME'}
             </Text>
           </View>
-        </View>
+        </Animated.View>
 
         {/* Rider Profile Card */}
-        <View style={styles.riderCard}>
+        <Animated.View style={[styles.riderCard, cardStyle(cardAnims[2])]}>
           <View style={styles.riderAvatar}>
             <Icon name="user" size={24} color={COLORS.white} />
           </View>
@@ -125,27 +277,23 @@ const TrackingScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.riderActions}>
-            <TouchableOpacity
-              onPress={() => showToast('Calling Rider Ramesh Kumar... 📞')}
-              style={styles.iconCircleBtn}>
+            <Bouncy style={styles.iconCircleBtn}>
               <Icon name="phone" size={16} color={COLORS.primary} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => showToast('Opening Chat with Rider... 💬')}
-              style={styles.iconCircleBtn}>
+            </Bouncy>
+            <Bouncy style={styles.iconCircleBtn}>
               <Icon name="message-square" size={16} color={COLORS.primary} />
-            </TouchableOpacity>
+            </Bouncy>
           </View>
-        </View>
+        </Animated.View>
 
         {/* Order Status Stepper */}
-        <View style={styles.stepperCard}>
+        <Animated.View style={[styles.stepperCard, cardStyle(cardAnims[3])]}>
           <View style={styles.stepperHeaderRow}>
             <Text style={styles.stepperTitle}>Order Journey</Text>
             {!isFullyDelivered ? (
-              <TouchableOpacity onPress={handleSimulateStatus} style={styles.simBtn}>
+              <Bouncy onPress={handleSimulateStatus} style={styles.simBtn}>
                 <Text style={styles.simBtnText}>SIMULATE DELIVERY ⚡</Text>
-              </TouchableOpacity>
+              </Bouncy>
             ) : null}
           </View>
 
@@ -154,18 +302,7 @@ const TrackingScreen = ({ navigation }) => {
             return (
               <View key={step.id} style={styles.stepItem}>
                 <View style={styles.stepIndicatorColumn}>
-                  <View
-                    style={[
-                      styles.stepDot,
-                      step.completed && styles.stepDotCompleted,
-                      step.active && styles.stepDotActive,
-                    ]}>
-                    <Icon
-                      name={step.completed ? 'check' : step.active ? 'zap' : 'circle'}
-                      size={12}
-                      color={COLORS.white}
-                    />
-                  </View>
+                  <StepDot step={step} />
                   {!isLast ? (
                     <View
                       style={[
@@ -189,7 +326,7 @@ const TrackingScreen = ({ navigation }) => {
               </View>
             );
           })}
-        </View>
+        </Animated.View>
       </ScrollView>
     </View>
   );
@@ -199,25 +336,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-  },
-  toastContainer: {
-    position: 'absolute',
-    top: 50,
-    left: SPACING.l,
-    right: SPACING.l,
-    backgroundColor: COLORS.cartBarBg,
-    borderRadius: RADIUS.l,
-    paddingHorizontal: SPACING.l,
-    paddingVertical: SPACING.m,
-    flexDirection: 'row',
-    alignItems: 'center',
-    zIndex: 9999,
-    elevation: 10,
-  },
-  toastText: {
-    color: COLORS.white,
-    fontWeight: '800',
-    fontSize: 13,
   },
   header: {
     flexDirection: 'row',
@@ -244,6 +362,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
     color: COLORS.textPrimary,
+  },
+  headerStatusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  liveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: COLORS.primary,
+    marginRight: 5,
   },
   headerSubtitle: {
     fontSize: 11,
@@ -309,6 +439,11 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.s,
     alignSelf: 'flex-start',
   },
+  copyBtnRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
   copyBtnText: {
     color: COLORS.primary,
     fontWeight: '900',
@@ -339,6 +474,21 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     borderRadius: 2,
   },
+  riderMarkerWrap: {
+    width: 32,
+    height: 32,
+    marginHorizontal: SPACING.s,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  riderPulseRing: {
+    position: 'absolute',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+  },
   riderMarker: {
     width: 32,
     height: 32,
@@ -346,7 +496,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: SPACING.s,
   },
   routeLineDotted: {
     flex: 1,
@@ -507,4 +656,3 @@ const styles = StyleSheet.create({
 });
 
 export default TrackingScreen;
-
