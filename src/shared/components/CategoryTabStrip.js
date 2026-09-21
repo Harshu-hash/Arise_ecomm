@@ -1,10 +1,13 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { ScrollView, Text, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/spacing';
 
 const EXPANDED_HEIGHT = 66;
+const UNDERLINE_BASE_WIDTH = 100;
+const UNDERLINE_DURATION = 360;
+const UNDERLINE_EASING = Easing.bezier(0.22, 1, 0.36, 1);
 
 /**
  * "For You | Fashion | Mobiles | Electronics | Beauty ..." underline tab strip on Home.
@@ -54,53 +57,53 @@ const CategoryTabStrip = ({
       })
     : 0;
 
-  // --- Sliding underline: measured tab positions -> a single animated indicator ---
-  const tabLayoutsRef = useRef({});
+  // --- Sliding underline ---
+  // One `progress` value (a fractional tab index) drives the bar. Each tab's measured x/width
+  // is mapped onto translateX + scaleX through native-supported interpolation, so the whole
+  // slide-and-resize runs on the UI thread and can't stutter when the JS thread is busy
+  // (animating `width` instead would force useNativeDriver:false, i.e. JS-thread frames).
+  const activeIndex = Math.max(0, tabs.findIndex((t) => t.id === activeId));
+  const layoutsRef = useRef({});
+  const [layouts, setLayouts] = useState({});
   const hasPositionedRef = useRef(false);
-  const underlineX = useRef(new Animated.Value(0)).current;
-  const underlineWidth = useRef(new Animated.Value(0)).current;
-  const underlineOpacity = useRef(new Animated.Value(0)).current;
+  const progress = useRef(new Animated.Value(activeIndex)).current;
 
-  const moveUnderlineTo = (id, immediate) => {
-    const layout = tabLayoutsRef.current[id];
-    if (!layout) return;
-    if (immediate) {
-      underlineX.setValue(layout.x);
-      underlineWidth.setValue(layout.width);
-      underlineOpacity.setValue(1);
-    } else {
-      Animated.parallel([
-        Animated.timing(underlineX, {
-          toValue: layout.x,
-          duration: 260,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: false,
-        }),
-        Animated.timing(underlineWidth, {
-          toValue: layout.width,
-          duration: 260,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: false,
-        }),
-      ]).start();
-    }
-  };
+  const allMeasured = tabs.length > 0 && tabs.every((t) => layouts[t.id]);
 
   const handleTabLayout = (id, e) => {
     const { x, width } = e.nativeEvent.layout;
-    tabLayoutsRef.current[id] = { x, width };
-    if (id === activeId && !hasPositionedRef.current) {
-      hasPositionedRef.current = true;
-      moveUnderlineTo(id, true);
-    }
+    const prev = layoutsRef.current[id];
+    if (prev && prev.x === x && prev.width === width) return;
+    layoutsRef.current[id] = { x, width };
+    setLayouts({ ...layoutsRef.current });
   };
 
   useEffect(() => {
-    if (hasPositionedRef.current) {
-      moveUnderlineTo(activeId, false);
+    if (!allMeasured) return;
+    if (!hasPositionedRef.current) {
+      hasPositionedRef.current = true;
+      progress.setValue(activeIndex);
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeId]);
+    Animated.timing(progress, {
+      toValue: activeIndex,
+      duration: UNDERLINE_DURATION,
+      easing: UNDERLINE_EASING,
+      useNativeDriver: true,
+    }).start();
+  }, [activeIndex, allMeasured, progress]);
+
+  const underlineStyle = (() => {
+    if (!allMeasured) return null;
+    const single = tabs.length < 2;
+    const inputRange = single ? [0, 1] : tabs.map((_, i) => i);
+    const centers = tabs.map((t) => layouts[t.id].x + layouts[t.id].width / 2 - UNDERLINE_BASE_WIDTH / 2);
+    const scales = tabs.map((t) => layouts[t.id].width / UNDERLINE_BASE_WIDTH);
+    return {
+      translateX: progress.interpolate({ inputRange, outputRange: single ? [centers[0], centers[0]] : centers }),
+      scaleX: progress.interpolate({ inputRange, outputRange: single ? [scales[0], scales[0]] : scales }),
+    };
+  })();
 
   return (
     <ScrollView
@@ -139,27 +142,26 @@ const CategoryTabStrip = ({
       })}
 
       {/*
-        Two nested Animated.Views on purpose: labelTranslateY is derived from the
-        native-driven scrollY, while underlineX/underlineWidth are driven with
-        useNativeDriver:false (Animated.timing on tab click, a plain layout-adjacent
-        value). Mixing both driver types in a single style/transform array throws
-        ("Attempting to run JS driven animation on animated node that has been moved
-        to 'native'"), so each driver gets its own wrapper.
+        Everything here is native-driven (scrollY-based translateY + progress-based
+        translateX/scaleX), so they can safely share one transform array. Do not add a
+        JS-driven value (e.g. animating width/left) to this transform — mixing driver
+        types in one node throws and would also bring back the stutter.
       */}
-      <Animated.View
-        pointerEvents="none"
-        style={[styles.slidingUnderlineAnchor, { transform: [{ translateY: labelTranslateY }] }]}>
+      {underlineStyle ? (
         <Animated.View
+          pointerEvents="none"
           style={[
             styles.slidingUnderline,
             {
-              opacity: underlineOpacity,
-              width: underlineWidth,
-              transform: [{ translateX: underlineX }],
+              transform: [
+                { translateY: labelTranslateY },
+                { translateX: underlineStyle.translateX },
+                { scaleX: underlineStyle.scaleX },
+              ],
             },
           ]}
         />
-      </Animated.View>
+      ) : null}
     </ScrollView>
   );
 };
@@ -195,12 +197,11 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     fontWeight: '700',
   },
-  slidingUnderlineAnchor: {
+  slidingUnderline: {
     position: 'absolute',
     left: 0,
     bottom: 7,
-  },
-  slidingUnderline: {
+    width: UNDERLINE_BASE_WIDTH,
     height: 3,
     backgroundColor: COLORS.primary,
     borderTopLeftRadius: 2,

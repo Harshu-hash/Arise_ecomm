@@ -5,10 +5,15 @@ import Icon from 'react-native-vector-icons/Feather';
 import { COLORS } from '../../constants/colors';
 import { SPACING, RADIUS } from '../../constants/spacing';
 import GradientBackground from './GradientBackground';
+import { useBrandSwitchLoader } from '../../contexts/BrandSwitchLoaderContext';
 
 const TRACK_PADDING = 3;
 const TRACK_GAP = 4;
 const SLIDE_DURATION = 300;
+// Loader fades in first, then the screen swap happens hidden behind it, then it lingers so the
+// destination screen has time to render before the loader fades away.
+const LOADER_FADE_IN_WAIT = 300;
+const LOADER_LINGER = 750;
 
 /**
  * Modern Segmented "Flipkart / Value 365" Brand Switcher Bar
@@ -39,6 +44,7 @@ const TopBrandTabs = ({ tabs, activeId, onSelect }) => {
   // watched on the other screen (reads as jitter). Only an actual tap should animate.
   const skipNextAnimRef = useRef(false);
   const pendingTabRef = useRef(null);
+  const { showBrandLoader, hideBrandLoader } = useBrandSwitchLoader();
 
   useFocusEffect(
     useCallback(() => {
@@ -65,7 +71,11 @@ const TopBrandTabs = ({ tabs, activeId, onSelect }) => {
       if (finished && pendingTabRef.current) {
         const tab = pendingTabRef.current;
         pendingTabRef.current = null;
-        onSelect && onSelect(tab);
+        showBrandLoader(tab);
+        setTimeout(() => {
+          onSelect && onSelect(tab);
+          hideBrandLoader(LOADER_LINGER);
+        }, LOADER_FADE_IN_WAIT);
       }
     });
   }, [activeIndex, slideAnim]);

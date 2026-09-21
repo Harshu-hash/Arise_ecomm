@@ -6,6 +6,7 @@ import { StyleSheet } from 'react-native';
 import { ThemeProvider } from '@theme';
 import { COLORS } from '../constants/colors';
 import { StatusBarManager } from '../shared/components';
+import { BrandSwitchLoaderProvider } from '../contexts/BrandSwitchLoaderContext';
 import RootNavigator from '../navigation/RootNavigator';
 
 const App = () => {
@@ -14,9 +15,11 @@ const App = () => {
       <SafeAreaProvider>
         <ThemeProvider>
           <StatusBarManager barStyle="dark-content" themeColor={COLORS.surface} />
-          <NavigationContainer>
-            <RootNavigator />
-          </NavigationContainer>
+          <BrandSwitchLoaderProvider>
+            <NavigationContainer>
+              <RootNavigator />
+            </NavigationContainer>
+          </BrandSwitchLoaderProvider>
         </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
