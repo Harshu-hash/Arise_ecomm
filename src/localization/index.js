@@ -1,1 +1,0 @@
-﻿// Barrel: t(), useTranslation, changeLanguage.
